@@ -3,20 +3,22 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>Jellyfin.Plugin.TuneIn</RootNamespace>
-    <AssemblyVersion>1.0.7.0</AssemblyVersion>
-    <FileVersion>1.0.7.0</FileVersion>
+    <AssemblyVersion>1.0.7.1</AssemblyVersion>
+    <FileVersion>1.0.7.1</FileVersion>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Nullable>enable</Nullable>
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
     <CodeAnalysisRuleSet>../jellyfin.ruleset</CodeAnalysisRuleSet>
+    <RepositoryUrl>https://nuc.home/gitea/bogdan/jellyfin-plugin-tunein.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageIcon>Thumb.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Configuration\configPage.html" />
     <None Remove="Images\backdrop.png" />
     <None Remove="Images\primary.png" />
-    <None Remove="Images\thumb.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,8 +43,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="meta.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <None Update="Images\Thumb.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
 
