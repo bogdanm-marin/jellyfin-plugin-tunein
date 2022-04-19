@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1">
+	<head>
+		<title>TestUsername&apos;s Favorites</title>
+		<status>200</status>
+
+	</head>
+	<body>
+		<outline type="audio" text="100.6 | Rock FM Romania (Alternative Rock)" URL="http://opml.radiotime.com/Tune.ashx?id=s87949&amp;formats=mp3,aac,ogg,flash,hls&amp;partnerId=TestPartnerId&amp;username=TestUsername" bitrate="64" reliability="97" guide_id="s87949" subtext="Rockaholic cu Ciprian Muntele" genre_id="g115" formats="aac" show_id="p1224544" item="station" image="http://cdn-radiotime-logos.tunein.com/s87949q.png" current_track="Rockaholic cu Ciprian Muntele" now_playing_id="s87949" preset_number="1" preset_id="s87949" is_preset="true"/>
+		<outline type="audio" text="102.8 | PROFM (Top 40 &amp; Pop Music)" URL="http://opml.radiotime.com/Tune.ashx?id=s2770&amp;formats=mp3,aac,ogg,flash,hls&amp;partnerId=TestPartnerId&amp;username=TestUsername" bitrate="128" reliability="99" guide_id="s2770" subtext="PROFM OPEN RADIO" genre_id="g61" formats="mp3" show_id="p1632713" item="station" image="http://cdn-profiles.tunein.com/s2770/images/logoq.jpg?t=162363" current_track="PROFM OPEN RADIO" now_playing_id="s2770" preset_number="2" preset_id="s2770" is_preset="true"/>
+	</body>
+</opml>

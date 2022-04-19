@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1">
+	<head>
+		<title>Romania</title>
+		<status>200</status>
+
+	</head>
+	<body>
+		<outline text="All Stations" key="pivot">
+			<outline type="link" text="Most Popular" URL="http://opml.radiotime.com/Browse.ashx?id=r101287&amp;formats=mp3,aac,ogg,flash,hls&amp;partnerId=TestPartnerId&amp;username=TestUsername&amp;filter=s:popular" key="popular"/>
+			<outline type="link" text="By Genre" URL="http://opml.radiotime.com/Browse.ashx?id=r101287&amp;pivot=genre&amp;formats=mp3,aac,ogg,flash,hls&amp;partnerId=TestPartnerId&amp;username=TestUsername&amp;filter=country" key="pivotGenre"/>
+			<outline type="link" text="Find by Name" URL="http://opml.radiotime.com/Browse.ashx?id=r101287&amp;pivot=name&amp;formats=mp3,aac,ogg,flash,hls&amp;partnerId=TestPartnerId&amp;username=TestUsername&amp;filter=country" key="pivotName"/>
+		</outline>
+		<outline type="link" text="Bucharest-Ilfov" URL="http://opml.radiotime.com/Browse.ashx?id=r101052&amp;formats=mp3,aac,ogg,flash,hls&amp;partnerId=TestPartnerId&amp;username=TestUsername" guide_id="r101052"/>
+		<outline type="link" text="Centru" URL="http://opml.radiotime.com/Browse.ashx?id=r102182&amp;formats=mp3,aac,ogg,flash,hls&amp;partnerId=TestPartnerId&amp;username=TestUsername" guide_id="r102182"/>
+		<outline type="link" text="Nord-Est" URL="http://opml.radiotime.com/Browse.ashx?id=r102179&amp;formats=mp3,aac,ogg,flash,hls&amp;partnerId=TestPartnerId&amp;username=TestUsername" guide_id="r102179"/>
+		<outline type="link" text="Nord-Vest" URL="http://opml.radiotime.com/Browse.ashx?id=r102181&amp;formats=mp3,aac,ogg,flash,hls&amp;partnerId=TestPartnerId&amp;username=TestUsername" guide_id="r102181"/>
+		<outline type="link" text="Sud" URL="http://opml.radiotime.com/Browse.ashx?id=r102184&amp;formats=mp3,aac,ogg,flash,hls&amp;partnerId=TestPartnerId&amp;username=TestUsername" guide_id="r102184"/>
+		<outline type="link" text="Sud-Est" URL="http://opml.radiotime.com/Browse.ashx?id=r102183&amp;formats=mp3,aac,ogg,flash,hls&amp;partnerId=TestPartnerId&amp;username=TestUsername" guide_id="r102183"/>
+		<outline type="link" text="Sud-Vest" URL="http://opml.radiotime.com/Browse.ashx?id=r102185&amp;formats=mp3,aac,ogg,flash,hls&amp;partnerId=TestPartnerId&amp;username=TestUsername" guide_id="r102185"/>
+		<outline type="link" text="Vest" URL="http://opml.radiotime.com/Browse.ashx?id=r102180&amp;formats=mp3,aac,ogg,flash,hls&amp;partnerId=TestPartnerId&amp;username=TestUsername" guide_id="r102180"/>
+	</body>
+</opml>

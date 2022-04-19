@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1">
+	<head>
+		<title>Bucharest-Ilfov</title>
+		<status>200</status>
+
+	</head>
+	<body>
+		<outline text="All Stations" key="stations">
+			<outline type="audio" text="Digi FM 97.9 (World Music)" URL="http://opml.radiotime.com/Tune.ashx?id=s257792&amp;formats=mp3,aac,ogg,flash,hls&amp;partnerId=TestPartnerId&amp;username=TestUsername" bitrate="128" reliability="99" guide_id="s257792" subtext="Ramon Cotizo" genre_id="g22" formats="mp3" show_id="p1032170" item="station" image="http://cdn-profiles.tunein.com/s257792/images/logoq.jpg?t=636419" current_track="Ramon Cotizo" now_playing_id="s257792" preset_id="s257792"/>
+			<outline type="audio" text="Europa FM 106.7 (Adult Hits)" URL="http://opml.radiotime.com/Tune.ashx?id=s8334&amp;formats=mp3,aac,ogg,flash,hls&amp;partnerId=TestPartnerId&amp;username=TestUsername" bitrate="64" reliability="94" guide_id="s8334" subtext="Europa Express" genre_id="g3" formats="aac,mp3" show_id="p671033" item="station" image="http://cdn-profiles.tunein.com/s8334/images/logoq.png" current_track="Europa Express" now_playing_id="s8334" preset_id="s8334" is_preset="true"/>
+			<outline type="audio" text="Kiss FM Romania 96.1 (Top 40 &amp; Pop Music)" URL="http://opml.radiotime.com/Tune.ashx?id=s17700&amp;formats=mp3,aac,ogg,flash,hls&amp;partnerId=TestPartnerId&amp;username=TestUsername" bitrate="48" reliability="98" guide_id="s17700" subtext="Daily Kiss - Andreea Berghea" genre_id="g61" formats="aac" show_id="p919899" item="station" image="http://cdn-profiles.tunein.com/s17700/images/logoq.png?t=1" current_track="Daily Kiss - Andreea Berghea" now_playing_id="s17700" preset_id="s17700"/>
+		</outline>
+		<outline text="By Genre" key="pivotGenre">
+			<outline type="link" text="Adult Hits" URL="http://opml.radiotime.com/Browse.ashx?id=r101052&amp;formats=mp3,aac,ogg,flash,hls&amp;partnerId=TestPartnerId&amp;username=TestUsername&amp;filter=g3" guide_id="g3"/>
+			<outline type="link" text="Alternative Rock" URL="http://opml.radiotime.com/Browse.ashx?id=r101052&amp;formats=mp3,aac,ogg,flash,hls&amp;partnerId=TestPartnerId&amp;username=TestUsername&amp;filter=g115" guide_id="g115"/>
+		</outline>
+	</body>
+</opml>

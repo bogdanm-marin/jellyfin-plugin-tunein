@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1">
+	<head>
+		<title>Browse</title>
+		<status>200</status>
+
+	</head>
+	<body>
+		<outline type="link" text="Favorites" URL="http://opml.radiotime.com/Browse.ashx?c=presets&amp;formats=mp3,aac,ogg,flash,hls&amp;partnerId=TestPartnerId&amp;username=TestUsername" key="presets"/>
+		<outline type="link" text="Local Radio" URL="http://opml.radiotime.com/Browse.ashx?c=local&amp;formats=mp3,aac,ogg,flash,hls&amp;partnerId=TestPartnerId&amp;username=TestUsername" key="local"/>
+		<outline type="link" text="Music" URL="http://opml.radiotime.com/Browse.ashx?c=music&amp;formats=mp3,aac,ogg,flash,hls&amp;partnerId=TestPartnerId&amp;username=TestUsername" key="music"/>
+		<outline type="link" text="Talk" URL="http://opml.radiotime.com/Browse.ashx?c=talk&amp;formats=mp3,aac,ogg,flash,hls&amp;partnerId=TestPartnerId&amp;username=TestUsername" key="talk"/>
+		<outline type="link" text="Sports" URL="http://opml.radiotime.com/Browse.ashx?c=sports&amp;formats=mp3,aac,ogg,flash,hls&amp;partnerId=TestPartnerId&amp;username=TestUsername" key="sports"/>
+		<outline type="link" text="By Location" URL="http://opml.radiotime.com/Browse.ashx?id=r0&amp;formats=mp3,aac,ogg,flash,hls&amp;partnerId=TestPartnerId&amp;username=TestUsername" key="location"/>
+		<outline type="link" text="By Language" URL="http://opml.radiotime.com/Browse.ashx?c=lang&amp;formats=mp3,aac,ogg,flash,hls&amp;partnerId=TestPartnerId&amp;username=TestUsername" key="language"/>
+		<outline type="link" text="Podcasts" URL="http://opml.radiotime.com/Browse.ashx?c=podcast&amp;formats=mp3,aac,ogg,flash,hls&amp;partnerId=TestPartnerId&amp;username=TestUsername" key="podcast"/>
+	</body>
+</opml>
