@@ -136,7 +136,7 @@ media-ujg8jo7xj_b250000_311473.aac
                                 SupportsDirectStream = true,
                                 RunTimeTicks = 0,
                                 TranscodingSubProtocol = "hls",
-                                MediaStreams = new()
+                                MediaStreams = new []
                                 {
                                     new MediaStream
                                     {
@@ -200,7 +200,7 @@ https://live4ro.antenaplay.ro/radiozu/radiozu-48000.m3u8
                 SupportsDirectStream = true,
                 TranscodingSubProtocol = "hls",
                 RunTimeTicks = 0,
-                MediaStreams = new()
+                MediaStreams = new []
                 {
                             new MediaStream
                             {

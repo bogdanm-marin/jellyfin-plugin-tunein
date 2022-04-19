@@ -124,7 +124,7 @@ Version=2
                                 SupportsDirectStream = true,
                                 IsInfiniteStream = true,
                                 Bitrate = 128,
-                                MediaStreams = new()
+                                MediaStreams = new []
                                 {
                                     new MediaStream
                                     {
@@ -208,7 +208,7 @@ Version=2
                                 SupportsDirectStream = true,
                                 Bitrate = 128,
                                 IsInfiniteStream = true,
-                                MediaStreams = new()
+                                MediaStreams = new []
                                 {
                                     new MediaStream
                                     {

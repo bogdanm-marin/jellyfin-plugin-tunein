@@ -49,7 +49,7 @@ namespace Jellyfin.Plugin.TuneIn.Providers.Handlers.MediaTypeHandlers
                 TranscodingSubProtocol = "hls",
                 RunTimeTicks = 0,
             };
-            mediaSourceInfo.MediaStreams.Add(mediaStream);
+            mediaSourceInfo.MediaStreams = new[] { mediaStream };
 
             yield return await ValueTask.FromResult(mediaSourceInfo).ConfigureAwait(false);
         }

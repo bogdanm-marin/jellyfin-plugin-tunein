@@ -24,7 +24,7 @@ namespace Jellyfin.Plugin.TuneIn.Providers.Handlers.UriHandlers
         /// Initializes a new instance of the <see cref="ProcessUriHandler"/> class.
         /// </summary>
         /// <param name="httpClientFactory"><see cref="HttpClient" /> factory.</param>
-        /// <param name="logger"><see cref="Logger" /> instance for <see cref="ProcessUriHandler"/>.</param>
+        /// <param name="logger"><see cref="ILogger{ProcessUriHandler}" /> instance for <see cref="ProcessUriHandler"/>.</param>
         /// <param name="handlers">Collection of <see cref="IHttpResponseMessageHandler"/> to process URI content.</param>
         public ProcessUriHandler(
             IHttpClientFactory httpClientFactory,

@@ -17,7 +17,7 @@ namespace Jellyfin.Plugin.TuneIn.Providers.Handlers.MediaTypeHandlers
     /// </summary>
     public class KnownMediaTypeHandler : IHttpResponseMessageHandler
     {
-        private Dictionary<string, (string Container, string Codec)> SupportedMediaTypes { get; } = new()
+        private Dictionary<string, (string Container, string Codec)> SupportedMediaTypes { get; } = new ()
         {
             { "audio/x-aac", ("aac", "aac") },
             { "audio/aacp", ("aac", "aac") },
@@ -60,7 +60,7 @@ namespace Jellyfin.Plugin.TuneIn.Providers.Handlers.MediaTypeHandlers
                 SupportsDirectPlay = true,
                 SupportsDirectStream = true,
             };
-            mediaSourceInfo.MediaStreams.Add(mediaStream);
+            mediaSourceInfo.MediaStreams = new[] { mediaStream };
 
             var headers = httpResponseMessage.Headers.Union(httpResponseMessage.Content!.Headers).ToList();
 
