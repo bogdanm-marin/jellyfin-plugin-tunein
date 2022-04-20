@@ -20,7 +20,9 @@ namespace Jellyfin.Plugin.TuneIn
 
             serviceCollection
                 .AddSingleton<ChannelItemInfoProvider>()
-                .AddSingleton<MediaSourceInfoProvider>();
+                .AddSingleton<MediaSourceInfoProvider>()
+                .AddSingleton<TuneInUriProvider>()
+                ;
 
             serviceCollection
                 .AddSingleton<IUriHandler, KnownExtensionsUriHandler>()

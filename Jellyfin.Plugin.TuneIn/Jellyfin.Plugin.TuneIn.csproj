@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>Jellyfin.Plugin.TuneIn</RootNamespace>
-    <AssemblyVersion>1.0.7.1</AssemblyVersion>
-    <FileVersion>1.0.7.1</FileVersion>
+    <AssemblyVersion>1.0.7.2</AssemblyVersion>
+    <FileVersion>1.0.7.2</FileVersion>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Nullable>enable</Nullable>
@@ -13,6 +13,7 @@
     <RepositoryUrl>https://nuc.home/gitea/bogdan/jellyfin-plugin-tunein.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageIcon>Thumb.png</PackageIcon>
+    <PackageTags>tunein,internet,radio</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
