@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Jellyfin.Plugin.TuneIn.Extensions;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.MediaInfo;
@@ -23,6 +24,11 @@ namespace Jellyfin.Plugin.TuneIn.Providers.Handlers.UriHandlers
             [EnumeratorCancellation]
             CancellationToken cancellationToken)
         {
+            if (!uri.SchemeIsHttpOrHttps())
+            {
+                yield break;
+            }
+
             if (!uri.AbsoluteUri.EndsWith(".m3u8", StringComparison.OrdinalIgnoreCase))
             {
                 yield break;

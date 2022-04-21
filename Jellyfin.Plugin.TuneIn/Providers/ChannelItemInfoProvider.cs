@@ -50,6 +50,7 @@ namespace Jellyfin.Plugin.TuneIn.Providers
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<IEnumerable<ChannelItemInfo>> GetManyAsync(Uri mediaUrl, CancellationToken cancellationToken)
         {
+            const string unavailable = "unavailable";
             _logger.LogDebug("TuneIn url {Url}", mediaUrl);
             using (var httpClient = _httpClientFactory.CreateClient())
             {
@@ -65,7 +66,8 @@ namespace Jellyfin.Plugin.TuneIn.Providers
                     var items = from outline in xmlDocument.Descendants("outline")
                                 let type = outline.Attribute("type")
                                 let url = outline.Attribute("URL")
-                                where type != null && url != null
+                                let key = outline.Attribute("key")
+                                where type != null && url != null && !unavailable.Equals(key?.Value, StringComparison.OrdinalIgnoreCase)
                                 where types.Contains(type.Value)
                                 let text = outline.Attribute("text")
                                 let image = outline.Attribute("image")
@@ -77,7 +79,6 @@ namespace Jellyfin.Plugin.TuneIn.Providers
                                 let item = outline.Attribute("item")
                                 let stream_type = outline.Attribute("stream_type")
                                 let playing_image = outline.Attribute("playing_image")
-                                let key = outline.Attribute("key")
                                 select new ChannelItemInfo
                                 {
                                     Id = url?.Value,
