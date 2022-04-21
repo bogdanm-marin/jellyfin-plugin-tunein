@@ -4,8 +4,11 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using System.Xml.Linq;
+using MediaBrowser.Controller;
 using MediaBrowser.Controller.Channels;
+using MediaBrowser.Controller.Configuration;
 using MediaBrowser.Model.Channels;
 using Microsoft.Extensions.Logging;
 
@@ -17,19 +20,26 @@ namespace Jellyfin.Plugin.TuneIn.Providers
     public class ChannelItemInfoProvider
     {
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IServerApplicationHost _serverApplicationHost;
         private readonly ILogger<ChannelItemInfoProvider> _logger;
+        private readonly string _localUrl;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChannelItemInfoProvider"/> class.
         /// </summary>
         /// <param name="httpClientFactory">IHttpClientFactory.</param>
+        /// <param name="serverApplicationHost"><see cref="IServerApplicationHost"/> instance.</param>
         /// <param name="logger">ILogger.</param>
         public ChannelItemInfoProvider(
             IHttpClientFactory httpClientFactory,
+            IServerApplicationHost serverApplicationHost,
             ILogger<ChannelItemInfoProvider> logger)
         {
             _httpClientFactory = httpClientFactory;
+            _serverApplicationHost = serverApplicationHost;
             _logger = logger;
+
+            _localUrl = serverApplicationHost.GetLoopbackHttpApiUrl();
         }
 
         /// <summary>
@@ -79,7 +89,7 @@ namespace Jellyfin.Plugin.TuneIn.Providers
                                         "audio" => ChannelItemType.Media,
                                         _ => default
                                     },
-                                    ImageUrl = image?.Value ?? GetDefaultImage(key?.Value),
+                                    ImageUrl = image?.Value ?? GetDefaultImage(key?.Value) ?? GetDynamicImage(text?.Value),
                                     ContentType = type.Value switch
                                     {
                                         "audio" => item?.Value switch
@@ -106,18 +116,30 @@ namespace Jellyfin.Plugin.TuneIn.Providers
             }
         }
 
-        private static string? GetDefaultImage(string? name) => name switch
+        private string? GetDefaultImage(string? name) => name switch
         {
-            "presets" => "https://raw.githubusercontent.com/snazy2000/MediaBrowser.Channels/master/MediaBrowser.Plugins.TuneIn/Images/tunein-myfavs.png",
-            "local" => "https://raw.githubusercontent.com/snazy2000/MediaBrowser.Channels/master/MediaBrowser.Plugins.TuneIn/Images/tunein-localradio.png",
-            "music" => "https://raw.githubusercontent.com/snazy2000/MediaBrowser.Channels/master/MediaBrowser.Plugins.TuneIn/Images/tunein-music.png",
-            "sports" => "https://raw.githubusercontent.com/snazy2000/MediaBrowser.Channels/master/MediaBrowser.Plugins.TuneIn/Images/tunein-sports.png",
-            "location" => "https://raw.githubusercontent.com/snazy2000/MediaBrowser.Channels/master/MediaBrowser.Plugins.TuneIn/Images/tunein-bylocation.png",
-            "language" => "https://raw.githubusercontent.com/snazy2000/MediaBrowser.Channels/master/MediaBrowser.Plugins.TuneIn/Images/tunein-bylanguage.png",
-            "podcast" => "https://raw.githubusercontent.com/snazy2000/MediaBrowser.Channels/master/MediaBrowser.Plugins.TuneIn/Images/tunein-podcasts.png",
-            "talk" => "https://raw.githubusercontent.com/snazy2000/MediaBrowser.Channels/master/MediaBrowser.Plugins.TuneIn/Images/tunein-talk.png",
+            "presets" => $"{_localUrl}/api/v1/TuneIn/Image/tunein-myfavs.png",
+            "local" => $"{_localUrl}/api/v1/TuneIn/Image/tunein-localradio.png",
+            "music" => $"{_localUrl}/api/v1/TuneIn/Image/tunein-music.png",
+            "sports" => $"{_localUrl}/api/v1/TuneIn/Image/tunein-sports.png",
+            "location" => $"{_localUrl}/api/v1/TuneIn/Image/tunein-bylocation.png",
+            "language" => $"{_localUrl}/api/v1/TuneIn/Image/tunein-bylanguage.png",
+            "podcast" => $"{_localUrl}/api/v1/TuneIn/Image/tunein-podcasts.png",
+            "talk" => $"{_localUrl}/api/v1/TuneIn/Image/tunein-talk.png",
             null => default,
             _ => default,
         };
+
+        private string? GetDynamicImage(string? name, int width = 480, int height = 480, float fontSize = 40, string format = "png")
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return null;
+            }
+
+            var encodedName = HttpUtility.UrlEncode(name);
+
+            return $"{_localUrl}/api/v1/TuneIn/Image/generate/{encodedName}-w{width}-h{height}-fs{fontSize}.{format}";
+        }
     }
 }
