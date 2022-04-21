@@ -54,7 +54,7 @@ namespace Jellyfin.Plugin.TuneIn.Channels
         public string Description => "Listen to online radio, find streaming music radio and streaming talk radio with TuneIn.";
 
         /// <inheritdoc/>
-        public string DataVersion => "1.6";
+        public string DataVersion { get; set; } = typeof(TuneInChannel).Assembly.GetName()!.Version!.ToString();
 
         /// <inheritdoc/>
         public string HomePageUrl => "https://www.tunein.com/";

@@ -58,5 +58,19 @@ namespace Jellyfin.Plugin.TuneIn.Controllers
         [DefaultValue("Noto Sans, Noto Sans HK, Noto Sans JP, Noto Sans KR, Noto Sans SC, sans-serif")]
         [FromQuery]
         public string FontFamilyName { get; set; } = "Noto Sans, Noto Sans HK, Noto Sans JP, Noto Sans KR, Noto Sans SC, sans-serif";
+
+        /// <summary>
+        /// Gets or sets background color.
+        /// </summary>
+        [DefaultValue("FFFFFF")]
+        [FromQuery]
+        public string BackgroundColor { get; set; } = "FFFFFF";
+
+        /// <summary>
+        /// Gets or sets Text padding.
+        /// </summary>
+        [DefaultValue(30f)]
+        [FromQuery]
+        public float TextPadding { get; set; } = 15f;
     }
 }

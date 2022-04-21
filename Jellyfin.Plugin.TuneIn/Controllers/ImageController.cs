@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Web;
+using Jellyfin.Plugin.TuneIn.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using SkiaSharp;
 
@@ -31,6 +32,11 @@ namespace Jellyfin.Plugin.TuneIn.Controllers
                 ModelState.AddModelError(nameof(imageAttributes.FontColor), $"Invalid {nameof(imageAttributes.FontColor)}: {imageAttributes.FontColor}");
             }
 
+            if (!SKColor.TryParse(imageAttributes.BackgroundColor, out var backgroundColor))
+            {
+                ModelState.AddModelError(nameof(imageAttributes.BackgroundColor), $"Invalid {nameof(imageAttributes.BackgroundColor)}: {imageAttributes.BackgroundColor}");
+            }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -53,8 +59,10 @@ namespace Jellyfin.Plugin.TuneIn.Controllers
                         SubpixelText = true,
                     };
 
+                    canvas.DrawColor(backgroundColor);
+
                     var decodedText = HttpUtility.UrlDecode(imageAttributes.Text);
-                    canvas.DrawText(decodedText, imageAttributes.Width / 2f, imageAttributes.Height / 2f, paint);
+                    canvas.DrawText(decodedText!, imageAttributes.Width / 2f, imageAttributes.Height / 2f, imageAttributes.Width - (imageAttributes.TextPadding * 2), paint);
                 }
 
                 using (var encoder = skBitmap.Encode(imageFormat, 100))
