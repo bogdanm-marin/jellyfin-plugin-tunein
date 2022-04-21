@@ -27,9 +27,9 @@ namespace Jellyfin.Plugin.TuneIn.Controllers
         /// <summary>
         /// Gets or sets image width.
         /// </summary>
-        [DefaultValue(720)]
+        [DefaultValue(405)]
         [FromRoute]
-        public int Width { get; set; } = 720;
+        public int Width { get; set; } = 405;
 
         /// <summary>
         /// Gets or sets image height.
@@ -48,9 +48,9 @@ namespace Jellyfin.Plugin.TuneIn.Controllers
         /// <summary>
         /// Gets or sets text font size.
         /// </summary>
-        [DefaultValue(60)]
+        [DefaultValue(30)]
         [FromRoute]
-        public float FontSize { get; set; } = 60;
+        public float FontSize { get; set; } = 30;
 
         /// <summary>
         /// Gets or sets text font family name.
@@ -69,7 +69,7 @@ namespace Jellyfin.Plugin.TuneIn.Controllers
         /// <summary>
         /// Gets or sets Text padding.
         /// </summary>
-        [DefaultValue(30f)]
+        [DefaultValue(15f)]
         [FromQuery]
         public float TextPadding { get; set; } = 15f;
     }

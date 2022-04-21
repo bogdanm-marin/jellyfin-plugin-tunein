@@ -312,57 +312,57 @@ namespace Jellyfin.Plugin.TuneIn.Tests
                 new {
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r101287&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername&filter=s:popular",
                         Name = "Most Popular",
-                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Most+Popular-w480-h480-fs40.png",
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Most+Popular-w480-h480-fs36.png",
                 },
                 new {
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r101287&pivot=genre&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername&filter=country",
                         Name = "By Genre",
-                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/By+Genre-w480-h480-fs40.png",
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/By+Genre-w480-h480-fs36.png",
                 },
                 new {
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r101287&pivot=name&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername&filter=country",
                         Name = "Find by Name",
-                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Find+by+Name-w480-h480-fs40.png",
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Find+by+Name-w480-h480-fs36.png",
                 },
                 new {
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r101052&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Name = "Bucharest-Ilfov",
-                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Bucharest-Ilfov-w480-h480-fs40.png",
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Bucharest-Ilfov-w480-h480-fs36.png",
                 },
                 new {
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r102182&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Name = "Centru",
-                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Centru-w480-h480-fs40.png",
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Centru-w480-h480-fs36.png",
                 },
                 new {
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r102179&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Name = "Nord-Est",
-                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Nord-Est-w480-h480-fs40.png",
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Nord-Est-w480-h480-fs36.png",
                 },
                 new {
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r102181&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Name = "Nord-Vest",
-                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Nord-Vest-w480-h480-fs40.png",
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Nord-Vest-w480-h480-fs36.png",
                 },
                 new {
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r102184&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Name = "Sud",
-                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Sud-w480-h480-fs40.png",
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Sud-w480-h480-fs36.png",
                 },
                 new {
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r102183&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Name = "Sud-Est",
-                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Sud-Est-w480-h480-fs40.png",
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Sud-Est-w480-h480-fs36.png",
                 },
                 new {
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r102185&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Name = "Sud-Vest",
-                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Sud-Vest-w480-h480-fs40.png",
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Sud-Vest-w480-h480-fs36.png",
                 },
                 new {
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r102180&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Name = "Vest",
-                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Vest-w480-h480-fs40.png",
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Vest-w480-h480-fs36.png",
                 },
             });
         }
@@ -506,7 +506,7 @@ namespace Jellyfin.Plugin.TuneIn.Tests
                     new ChannelItemInfo{
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r101052&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername&filter=g3",
                         Name = "Adult Hits",
-                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Adult+Hits-w480-h480-fs40.png",
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Adult+Hits-w480-h480-fs36.png",
                         OriginalTitle = default(String),
                         Type = ChannelItemType.Folder,
                         ContentType = default(ChannelMediaContentType),
@@ -514,7 +514,7 @@ namespace Jellyfin.Plugin.TuneIn.Tests
                     new ChannelItemInfo{
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r101052&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername&filter=g115",
                         Name = "Alternative Rock",
-                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Alternative+Rock-w480-h480-fs40.png",
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Alternative+Rock-w480-h480-fs36.png",
                         OriginalTitle = default(String),
                         Type = ChannelItemType.Folder,
                         ContentType = default(ChannelMediaContentType),

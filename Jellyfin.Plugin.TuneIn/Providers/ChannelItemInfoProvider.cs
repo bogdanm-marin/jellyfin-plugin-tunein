@@ -8,7 +8,6 @@ using System.Web;
 using System.Xml.Linq;
 using MediaBrowser.Controller;
 using MediaBrowser.Controller.Channels;
-using MediaBrowser.Controller.Configuration;
 using MediaBrowser.Model.Channels;
 using Microsoft.Extensions.Logging;
 
@@ -131,11 +130,11 @@ namespace Jellyfin.Plugin.TuneIn.Providers
             _ => default,
         };
 
-        private string? GetDynamicImage(string? name, int width = 480, int height = 480, float fontSize = 40, string format = "png")
+        private string? GetDynamicImage(string? name, int width = 480, int height = 480, float fontSize = 36, string format = "png")
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                return null;
+                return default;
             }
 
             var encodedName = HttpUtility.UrlEncode(name);

@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>Jellyfin.Plugin.TuneIn</RootNamespace>
-    <AssemblyVersion>1.0.7.3</AssemblyVersion>
-    <FileVersion>1.0.7.3</FileVersion>
+    <AssemblyVersion>1.0.7.4</AssemblyVersion>
+    <FileVersion>1.0.7.4</FileVersion>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Nullable>enable</Nullable>

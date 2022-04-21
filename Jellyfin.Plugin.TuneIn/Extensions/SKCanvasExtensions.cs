@@ -1,8 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SkiaSharp;
 
 namespace Jellyfin.Plugin.TuneIn.Extensions
@@ -23,7 +19,7 @@ namespace Jellyfin.Plugin.TuneIn.Extensions
         /// <param name="paint"><see cref="SKPaint"/> instance.</param>
         public static void DrawText(this SKCanvas canvas, string text, float x, float y, float lineLengthLimit, SKPaint paint)
         {
-            const char space = ' ';
+            const char Space = ' ';
 
             var spanText = text.AsSpan().Trim();
 
@@ -31,37 +27,48 @@ namespace Jellyfin.Plugin.TuneIn.Extensions
 
             ReadOnlySpan<char> substring;
 
-            var start = 0;
-            var end = 0;
+            var @start = 0;
+            var @break = 0;
 
             var ty = y - (paint.FontSpacing * (estimatedLines / 2)) + (paint.FontSpacing / 2);
 
-            for (int i = 1; i < spanText.Length; i++)
-            {
-                if (spanText[i] == space)
-                {
-                    substring = spanText.Slice(start, i - start - 1);
+            var lastIndex = spanText.Length - 1;
 
-                    if (paint.MeasureText(substring) > lineLengthLimit)
+            for (int i = 0; i <= lastIndex; i++)
+            {
+                if (spanText[i] == Space)
+                {
+                    if (@start == @break)
                     {
-                        canvas.DrawText(spanText[start..end].Trim().ToString(), x, ty, paint);
-                        ty += paint.FontSpacing;
-                        start = i;
+                        @break = i;
                     }
 
-                    end = i;
-                }
-                else
-                {
-                    if (spanText[start] == space)
+                    substring = spanText[start..i];
+
+                    if (paint.MeasureText(substring) >= lineLengthLimit)
                     {
-                        start = i;
-                        end = i;
+                        canvas.DrawText(spanText[@start..@break].Trim().ToString(), x, ty, paint);
+                        ty += paint.FontSpacing;
+                        @start = @break;
+                    }
+
+                    @break = i;
+                }
+
+                if (i == lastIndex)
+                {
+                    if (@start != @break)
+                    {
+                        canvas.DrawText(spanText[@start..@break].Trim().ToString(), x, ty, paint);
+                        ty += paint.FontSpacing;
+                        canvas.DrawText(spanText[@break..].Trim().ToString(), x, ty, paint);
+                    }
+                    else
+                    {
+                        canvas.DrawText(spanText[@start..].Trim().ToString(), x, ty, paint);
                     }
                 }
             }
-
-            canvas.DrawText(spanText[start..].Trim().ToString(), x, ty, paint);
         }
     }
 }
