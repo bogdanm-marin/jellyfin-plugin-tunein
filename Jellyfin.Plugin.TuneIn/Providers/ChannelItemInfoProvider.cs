@@ -130,11 +130,16 @@ namespace Jellyfin.Plugin.TuneIn.Providers
             _ => default,
         };
 
-        private string? GetDynamicImage(string? name, int width = 480, int height = 480, float fontSize = 36, string format = "png")
+        private string? GetDynamicImage(string? name, int width = 480, int height = 480, float fontSize = 36, string format = "png", bool increaseFontSizeSingleNameCharacter = true)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
                 return default;
+            }
+
+            if (name.Length == 1 && increaseFontSizeSingleNameCharacter)
+            {
+                fontSize *= 1.5f;
             }
 
             var encodedName = HttpUtility.UrlEncode(name);

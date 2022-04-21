@@ -43,9 +43,9 @@ namespace Jellyfin.Plugin.TuneIn.Extensions
                         @break = i;
                     }
 
-                    substring = spanText[start..i];
+                    substring = spanText[@start..i].Trim();
 
-                    if (paint.MeasureText(substring) >= lineLengthLimit)
+                    if (paint.MeasureText(substring) > lineLengthLimit)
                     {
                         canvas.DrawText(spanText[@start..@break].Trim().ToString(), x, ty, paint);
                         ty += paint.FontSpacing;
@@ -57,7 +57,9 @@ namespace Jellyfin.Plugin.TuneIn.Extensions
 
                 if (i == lastIndex)
                 {
-                    if (@start != @break)
+                    substring = spanText[@start..].Trim();
+
+                    if (paint.MeasureText(substring) > lineLengthLimit && @start != @break)
                     {
                         canvas.DrawText(spanText[@start..@break].Trim().ToString(), x, ty, paint);
                         ty += paint.FontSpacing;
@@ -65,7 +67,7 @@ namespace Jellyfin.Plugin.TuneIn.Extensions
                     }
                     else
                     {
-                        canvas.DrawText(spanText[@start..].Trim().ToString(), x, ty, paint);
+                        canvas.DrawText(substring.ToString(), x, ty, paint);
                     }
                 }
             }
