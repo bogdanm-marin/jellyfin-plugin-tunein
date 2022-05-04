@@ -2,6 +2,7 @@ using FluentAssertions;
 using Jellyfin.Plugin.TuneIn.Channels;
 using Jellyfin.Plugin.TuneIn.Tests.Extensions;
 using MediaBrowser.Common.Configuration;
+using MediaBrowser.Controller;
 using MediaBrowser.Controller.Channels;
 using MediaBrowser.Model.Channels;
 using MediaBrowser.Model.Drawing;
@@ -41,6 +42,11 @@ namespace Jellyfin.Plugin.TuneIn.Tests
                 .AddLogging(b => b.AddXUnit(output))
                 .AddTransient<IApplicationPaths>(_ => Substitute.For<IApplicationPaths>())
                 .AddTransient<IXmlSerializer>(_ => Substitute.For<IXmlSerializer>())
+                .AddSingleton<IServerApplicationHost>(s => {
+                    var service = Substitute.For<IServerApplicationHost>();
+                    service.GetApiUrlForLocalAccess().ReturnsForAnyArgs("http://127.0.0.1:8096");
+                    return service;
+                })
                 .AddSingleton<MockHttpMessageHandler>()
                 .AddTransient<HttpClient>(_ => new HttpClient(_.GetRequiredService<MockHttpMessageHandler>()))
                 .AddScoped<IHttpClientFactory>(s =>
@@ -107,56 +113,56 @@ namespace Jellyfin.Plugin.TuneIn.Tests
                         Type = ChannelItemType.Folder,
                         Name = "Favorites",
                         IsLiveStream = false,
-                        ImageUrl = "https://raw.githubusercontent.com/snazy2000/MediaBrowser.Channels/master/MediaBrowser.Plugins.TuneIn/Images/tunein-myfavs.png"
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/tunein-myfavs.png"
                 },
                 new ChannelItemInfo{
                         Id = "http://opml.radiotime.com/Browse.ashx?c=local&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Type = ChannelItemType.Folder,
                         Name = "Local Radio",
                         IsLiveStream = false,
-                        ImageUrl = "https://raw.githubusercontent.com/snazy2000/MediaBrowser.Channels/master/MediaBrowser.Plugins.TuneIn/Images/tunein-localradio.png"
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/tunein-localradio.png"
                 },
                 new ChannelItemInfo{
                         Id = "http://opml.radiotime.com/Browse.ashx?c=music&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Type = ChannelItemType.Folder,
                         Name = "Music",
                         IsLiveStream = false,
-                        ImageUrl = "https://raw.githubusercontent.com/snazy2000/MediaBrowser.Channels/master/MediaBrowser.Plugins.TuneIn/Images/tunein-music.png"
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/tunein-music.png"
                 },
                 new ChannelItemInfo{
                         Id = "http://opml.radiotime.com/Browse.ashx?c=talk&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Type = ChannelItemType.Folder,
                         Name = "Talk",
                         IsLiveStream = false,
-                        ImageUrl = "https://raw.githubusercontent.com/snazy2000/MediaBrowser.Channels/master/MediaBrowser.Plugins.TuneIn/Images/tunein-talk.png"
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/tunein-talk.png"
                 },
                 new ChannelItemInfo{
                         Id = "http://opml.radiotime.com/Browse.ashx?c=sports&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Type = ChannelItemType.Folder,
                         Name = "Sports",
                         IsLiveStream = false,
-                        ImageUrl = "https://raw.githubusercontent.com/snazy2000/MediaBrowser.Channels/master/MediaBrowser.Plugins.TuneIn/Images/tunein-sports.png"
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/tunein-sports.png"
                 },
                 new ChannelItemInfo{
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r0&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Type = ChannelItemType.Folder,
                         Name = "By Location",
                         IsLiveStream = false,
-                        ImageUrl = "https://raw.githubusercontent.com/snazy2000/MediaBrowser.Channels/master/MediaBrowser.Plugins.TuneIn/Images/tunein-bylocation.png"
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/tunein-bylocation.png"
                 },
                 new ChannelItemInfo{
                         Id = "http://opml.radiotime.com/Browse.ashx?c=lang&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Type = ChannelItemType.Folder,
                         Name = "By Language",
                         IsLiveStream = false,
-                        ImageUrl = "https://raw.githubusercontent.com/snazy2000/MediaBrowser.Channels/master/MediaBrowser.Plugins.TuneIn/Images/tunein-bylanguage.png"
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/tunein-bylanguage.png"
                 },
                 new ChannelItemInfo{
                         Id = "http://opml.radiotime.com/Browse.ashx?c=podcast&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Type = ChannelItemType.Folder,
                         Name = "Podcasts",
                         IsLiveStream = false,
-                        ImageUrl = "https://raw.githubusercontent.com/snazy2000/MediaBrowser.Channels/master/MediaBrowser.Plugins.TuneIn/Images/tunein-podcasts.png"
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/tunein-podcasts.png"
                 },
             });
         }
@@ -296,7 +302,6 @@ namespace Jellyfin.Plugin.TuneIn.Tests
             result.Items.Should().AllBeEquivalentTo(new
             {
                 Type = ChannelItemType.Folder,
-                ImageUrl = default(string),
                 ContentType = default(ChannelMediaContentType),
                 MediaType = ChannelMediaType.Audio,
                 OriginalTitle = default(string),
@@ -307,46 +312,57 @@ namespace Jellyfin.Plugin.TuneIn.Tests
                 new {
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r101287&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername&filter=s:popular",
                         Name = "Most Popular",
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Most+Popular-w480-h480-fs36.png",
                 },
                 new {
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r101287&pivot=genre&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername&filter=country",
                         Name = "By Genre",
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/By+Genre-w480-h480-fs36.png",
                 },
                 new {
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r101287&pivot=name&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername&filter=country",
                         Name = "Find by Name",
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Find+by+Name-w480-h480-fs36.png",
                 },
                 new {
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r101052&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Name = "Bucharest-Ilfov",
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Bucharest-Ilfov-w480-h480-fs36.png",
                 },
                 new {
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r102182&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Name = "Centru",
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Centru-w480-h480-fs36.png",
                 },
                 new {
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r102179&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Name = "Nord-Est",
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Nord-Est-w480-h480-fs36.png",
                 },
                 new {
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r102181&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Name = "Nord-Vest",
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Nord-Vest-w480-h480-fs36.png",
                 },
                 new {
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r102184&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Name = "Sud",
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Sud-w480-h480-fs36.png",
                 },
                 new {
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r102183&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Name = "Sud-Est",
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Sud-Est-w480-h480-fs36.png",
                 },
                 new {
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r102185&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Name = "Sud-Vest",
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Sud-Vest-w480-h480-fs36.png",
                 },
                 new {
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r102180&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Name = "Vest",
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Vest-w480-h480-fs36.png",
                 },
             });
         }
@@ -490,7 +506,7 @@ namespace Jellyfin.Plugin.TuneIn.Tests
                     new ChannelItemInfo{
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r101052&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername&filter=g3",
                         Name = "Adult Hits",
-                        ImageUrl = default(String),
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Adult+Hits-w480-h480-fs36.png",
                         OriginalTitle = default(String),
                         Type = ChannelItemType.Folder,
                         ContentType = default(ChannelMediaContentType),
@@ -498,7 +514,7 @@ namespace Jellyfin.Plugin.TuneIn.Tests
                     new ChannelItemInfo{
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r101052&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername&filter=g115",
                         Name = "Alternative Rock",
-                        ImageUrl = default(String),
+                        ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Alternative+Rock-w480-h480-fs36.png",
                         OriginalTitle = default(String),
                         Type = ChannelItemType.Folder,
                         ContentType = default(ChannelMediaContentType),

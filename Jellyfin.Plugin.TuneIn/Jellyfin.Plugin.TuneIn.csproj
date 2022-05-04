@@ -1,22 +1,33 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>Jellyfin.Plugin.TuneIn</RootNamespace>
-    <AssemblyVersion>1.0.7.0</AssemblyVersion>
-    <FileVersion>1.0.7.0</FileVersion>
+    <AssemblyVersion>1.0.8.1</AssemblyVersion>
+    <FileVersion>1.0.8.1</FileVersion>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Nullable>enable</Nullable>
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
     <CodeAnalysisRuleSet>../jellyfin.ruleset</CodeAnalysisRuleSet>
+    <RepositoryUrl>https://nuc.home/gitea/bogdan/jellyfin-plugin-tunein.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageIcon>Thumb.png</PackageIcon>
+    <PackageTags>tunein,internet,radio</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Configuration\configPage.html" />
     <None Remove="Images\backdrop.png" />
     <None Remove="Images\primary.png" />
-    <None Remove="Images\thumb.png" />
+    <None Remove="Images\tunein-bylanguage.png" />
+    <None Remove="Images\tunein-bylocation.png" />
+    <None Remove="Images\tunein-localradio.png" />
+    <None Remove="Images\tunein-music.png" />
+    <None Remove="Images\tunein-myfavs.png" />
+    <None Remove="Images\tunein-podcasts.png" />
+    <None Remove="Images\tunein-sports.png" />
+    <None Remove="Images\tunein-talk.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,14 +37,25 @@
     <EmbeddedResource Include="Images\Thumb.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Images\tunein-bylanguage.png" />
+    <EmbeddedResource Include="Images\tunein-bylocation.png" />
+    <EmbeddedResource Include="Images\tunein-localradio.png" />
+    <EmbeddedResource Include="Images\tunein-music.png" />
+    <EmbeddedResource Include="Images\tunein-myfavs.png" />
+    <EmbeddedResource Include="Images\tunein-podcasts.png" />
+    <EmbeddedResource Include="Images\tunein-sports.png" />
+    <EmbeddedResource Include="Images\tunein-talk.png" />
   </ItemGroup>
 
   <ItemGroup>
+
     <PackageReference Include="Jellyfin.Controller" Version="10.8.0-beta2" />
     <PackageReference Include="Jellyfin.Model" Version="10.8.0-beta2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="SerilogAnalyzer" Version="0.15.0" PrivateAssets="All" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="All" />
+    <PackageReference Include="SkiaSharp" Version="2.80.3" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.376" PrivateAssets="All" />
     <PackageReference Include="SmartAnalyzers.MultithreadingAnalyzer" Version="1.1.31" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
@@ -41,8 +63,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="meta.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <None Update="Images\Thumb.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
 

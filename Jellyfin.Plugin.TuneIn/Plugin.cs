@@ -14,6 +14,11 @@ namespace Jellyfin.Plugin.TuneIn
     public class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
     {
         /// <summary>
+        /// Plugin Identifier.
+        /// </summary>
+        public const string Identifier = "9bbd4510-64c9-2cf5-54a5-098af5075895";
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Plugin"/> class.
         /// </summary>
         /// <param name="applicationPaths">IApplicationPaths.</param>
@@ -26,7 +31,7 @@ namespace Jellyfin.Plugin.TuneIn
         }
 
         /// <inheritdoc/>
-        public override Guid Id { get; } = Guid.Parse("9bbd4510-64c9-2cf5-54a5-098af5075895");
+        public override Guid Id { get; } = Guid.Parse(Identifier);
 
         /// <inheritdoc/>
         public override string Name => "New TuneIn";

@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Jellyfin.Plugin.TuneIn.Extensions;
 using MediaBrowser.Model.Dto;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -42,6 +43,11 @@ namespace Jellyfin.Plugin.TuneIn.Providers.Handlers.UriHandlers
         /// <inheritdoc/>
         public async IAsyncEnumerable<MediaSourceInfo> HandleAsync(Uri uri, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
+            if (!uri.SchemeIsHttpOrHttps())
+            {
+                yield break;
+            }
+
             if (!uri.AbsoluteUri.EndsWith(".pls", StringComparison.OrdinalIgnoreCase))
             {
                 yield break;

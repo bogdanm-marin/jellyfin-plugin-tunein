@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 using Jellyfin.Plugin.TuneIn.Providers;
 using MediaBrowser.Controller.Channels;
 using MediaBrowser.Controller.Providers;
@@ -18,13 +17,11 @@ namespace Jellyfin.Plugin.TuneIn.Channels
     /// <summary>
     /// TuneInChannel.
     /// </summary>
-    public class TuneInChannel : IChannel, IRequiresMediaInfoCallback, IHasCacheKey, ISupportsMediaProbe
+    public class TuneInChannel : IChannel, IRequiresMediaInfoCallback, IHasCacheKey, ISupportsMediaProbe, ISupportsLatestMedia, ISearchableChannel
     {
-#pragma warning disable S1075 // URIs should not be hardcoded
-        private const string BaseUri = "http://opml.radiotime.com/Browse.ashx";
-#pragma warning restore S1075 // URIs should not be hardcoded
         private readonly ChannelItemInfoProvider _opmlProcessor;
         private readonly MediaSourceInfoProvider _mediaSourceInfoProvider;
+        private readonly TuneInUriProvider _tuneInUriProvider;
         private readonly Plugin _plugin;
         private readonly ILogger<TuneInChannel> _logger;
 
@@ -33,28 +30,31 @@ namespace Jellyfin.Plugin.TuneIn.Channels
         /// </summary>
         /// <param name="opmlProcessor">OpmlProcessor.</param>
         /// <param name="mediaSourceInfoProvider">MediaSourceInfoProvider.</param>
-        /// <param name="plugin">Plugin Instance.</param>
+        /// <param name="tuneInUriProvider">TuneIn Uri Provider.</param>
+        /// <param name="plugin">Plugin instance.</param>
         /// <param name="logger">ILogger.</param>
         public TuneInChannel(
             ChannelItemInfoProvider opmlProcessor,
             MediaSourceInfoProvider mediaSourceInfoProvider,
+            TuneInUriProvider tuneInUriProvider,
             Plugin plugin,
             ILogger<TuneInChannel> logger)
         {
             _opmlProcessor = opmlProcessor;
             _mediaSourceInfoProvider = mediaSourceInfoProvider;
+            _tuneInUriProvider = tuneInUriProvider;
             _plugin = plugin;
             _logger = logger;
         }
 
         /// <inheritdoc/>
-        public string Name => "New TuneIn";
+        public string Name => "TuneIn";
 
         /// <inheritdoc/>
         public string Description => "Listen to online radio, find streaming music radio and streaming talk radio with TuneIn.";
 
         /// <inheritdoc/>
-        public string DataVersion => "1.5";
+        public string DataVersion { get; set; } = typeof(TuneInChannel).Assembly.GetName()!.Version!.ToString();
 
         /// <inheritdoc/>
         public string HomePageUrl => "https://www.tunein.com/";
@@ -113,7 +113,7 @@ namespace Jellyfin.Plugin.TuneIn.Channels
         /// <inheritdoc/>
         public async Task<ChannelItemResult> GetChannelItems(InternalChannelItemQuery query, CancellationToken cancellationToken)
         {
-            using (_logger.BeginScope("GetChannelItems {FolderId}", query.FolderId))
+            using (_logger.BeginScope("{Method} {FolderId}", nameof(GetChannelItems), query.FolderId))
             {
                 Uri uri;
                 if (!string.IsNullOrEmpty(query.FolderId))
@@ -122,15 +122,7 @@ namespace Jellyfin.Plugin.TuneIn.Channels
                 }
                 else
                 {
-                    var uriBuilder = new UriBuilder(BaseUri);
-
-                    var queryParams = HttpUtility.ParseQueryString(uriBuilder.Query);
-                    queryParams.Add("formats", "mp3,aac,ogg,hls");
-                    queryParams.Add("partnerId", "uD1X52pA");
-                    queryParams.Add("username", _plugin.Configuration.Username);
-
-                    uriBuilder.Query = queryParams.ToString();
-                    uri = uriBuilder.Uri;
+                    uri = _tuneInUriProvider.BrowseUri;
                 }
 
                 try
@@ -188,11 +180,11 @@ namespace Jellyfin.Plugin.TuneIn.Channels
         /// <inheritdoc/>
         public async Task<IEnumerable<MediaSourceInfo>> GetChannelItemMediaInfo(string id, CancellationToken cancellationToken)
         {
-            var uri = new Uri(id);
-            using (_logger.BeginScope("GetChannelItemMediaInfo {Uri}", uri))
+            using (_logger.BeginScope("{Method} {Uri}", nameof(GetChannelItemMediaInfo), id))
             {
                 try
                 {
+                    var uri = new Uri(id);
                     var items = await _mediaSourceInfoProvider
                                         .GetManyAsync(uri, cancellationToken)
                                         .ToListAsync(cancellationToken)
@@ -211,7 +203,56 @@ namespace Jellyfin.Plugin.TuneIn.Channels
         /// <inheritdoc/>
         public string GetCacheKey(string userId)
         {
-            return $"{Name}-{userId}-{_plugin.Configuration.Username}-{DataVersion}";
+            return $"{Name}-{userId}-{_plugin.Configuration.Username}-{_plugin.Configuration.LatitudeLongitude}-{DataVersion}";
+        }
+
+        /// <inheritdoc/>
+        public async Task<IEnumerable<ChannelItemInfo>> GetLatestMedia(ChannelLatestMediaSearch request, CancellationToken cancellationToken)
+        {
+            using (_logger.BeginScope("{Method} {UserId}", nameof(GetLatestMedia), request?.UserId))
+            {
+                var uri = _tuneInUriProvider.FavoritesUri ?? _tuneInUriProvider.PopularUri;
+
+                var query = new InternalChannelItemQuery
+                {
+                    FolderId = uri.ToString()
+                };
+
+                var results = await GetChannelItems(query, cancellationToken).ConfigureAwait(false);
+
+                if (results == null)
+                {
+                    return Enumerable.Empty<ChannelItemInfo>();
+                }
+
+                return results.Items;
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task<IEnumerable<ChannelItemInfo>> Search(ChannelSearchInfo searchInfo, CancellationToken cancellationToken)
+        {
+            using (_logger.BeginScope("{Method} {UserId} {SearchTerm}", nameof(Search), searchInfo?.UserId, searchInfo?.SearchTerm))
+            {
+                if (searchInfo == null)
+                {
+                    return Enumerable.Empty<ChannelItemInfo>();
+                }
+
+                var query = new InternalChannelItemQuery
+                {
+                    FolderId = _tuneInUriProvider.GetSearchUri(searchInfo.SearchTerm).ToString()
+                };
+
+                var results = await GetChannelItems(query, cancellationToken).ConfigureAwait(false);
+
+                if (results == null)
+                {
+                    return Enumerable.Empty<ChannelItemInfo>();
+                }
+
+                return results.Items;
+            }
         }
     }
 }

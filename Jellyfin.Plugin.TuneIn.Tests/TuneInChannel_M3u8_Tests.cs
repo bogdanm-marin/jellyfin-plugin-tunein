@@ -9,6 +9,7 @@ using FluentAssertions;
 using Jellyfin.Plugin.TuneIn.Channels;
 using Jellyfin.Plugin.TuneIn.Tests.Extensions;
 using MediaBrowser.Common.Configuration;
+using MediaBrowser.Controller;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.MediaInfo;
@@ -38,6 +39,11 @@ namespace Jellyfin.Plugin.TuneIn.Tests
                 .AddTransient<IApplicationPaths>(_ => Substitute.For<IApplicationPaths>())
                 .AddTransient<IXmlSerializer>(_ => Substitute.For<IXmlSerializer>())
                 .AddSingleton<MockHttpMessageHandler>()
+                .AddSingleton<IServerApplicationHost>(s => {
+                    var service = Substitute.For<IServerApplicationHost>();
+                    service.GetApiUrlForLocalAccess().ReturnsForAnyArgs("http://127.0.0.1:8096");
+                    return service;
+                    })
                 .AddTransient<HttpClient>(_ => new HttpClient(_.GetRequiredService<MockHttpMessageHandler>()))
                 .AddScoped<IHttpClientFactory>(s =>
                 {
@@ -132,6 +138,7 @@ media-ujg8jo7xj_b250000_311473.aac
                                 Container = "aac",
                                 Protocol = MediaProtocol.Http,
                                 IsRemote = true,
+                                IsInfiniteStream = true,
                                 SupportsDirectPlay = true,
                                 SupportsDirectStream = true,
                                 RunTimeTicks = 0,
@@ -196,6 +203,7 @@ https://live4ro.antenaplay.ro/radiozu/radiozu-48000.m3u8
                 Protocol = MediaProtocol.Http,
                 Container = "aac",
                 IsRemote = true,
+                IsInfiniteStream = true,
                 SupportsDirectPlay = true,
                 SupportsDirectStream = true,
                 TranscodingSubProtocol = "hls",
