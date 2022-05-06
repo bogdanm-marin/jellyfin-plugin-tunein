@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>Jellyfin.Plugin.TuneIn</RootNamespace>
-    <AssemblyVersion>1.0.7.4</AssemblyVersion>
-    <FileVersion>1.0.7.4</FileVersion>
+    <AssemblyVersion>1.0.7.5</AssemblyVersion>
+    <FileVersion>1.0.7.5</FileVersion>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Nullable>enable</Nullable>
@@ -48,8 +48,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Jellyfin.Controller" Version="10.7.7" />
-    <PackageReference Include="Jellyfin.Model" Version="10.7.7" />
+    <PackageReference Include="Jellyfin.Controller" Version="10.7.*" />
+    <PackageReference Include="Jellyfin.Model" Version="10.7.*" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
     <PackageReference Include="SerilogAnalyzer" Version="0.15.0" PrivateAssets="All" />

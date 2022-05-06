@@ -15,7 +15,7 @@ using Microsoft.Extensions.Logging;
 namespace Jellyfin.Plugin.TuneIn.Channels
 {
     /// <summary>
-    /// TuneInChannel.
+    /// TuneIn Channel provides Channel items metadata.
     /// </summary>
     public class TuneInChannel : IChannel, IRequiresMediaInfoCallback, IHasCacheKey, ISupportsMediaProbe, ISupportsLatestMedia, ISearchableChannel
     {
@@ -48,7 +48,7 @@ namespace Jellyfin.Plugin.TuneIn.Channels
         }
 
         /// <inheritdoc/>
-        public string Name => "TuneIn";
+        public string Name => "Tune In";
 
         /// <inheritdoc/>
         public string Description => "Listen to online radio, find streaming music radio and streaming talk radio with TuneIn.";
@@ -80,22 +80,28 @@ namespace Jellyfin.Plugin.TuneIn.Channels
         /// <inheritdoc/>
         public Task<DynamicImageResponse> GetChannelImage(ImageType type, CancellationToken cancellationToken)
         {
-            switch (type)
+            using (_logger.BeginScope("{Method} {ImageType}", nameof(GetChannelImage), type))
             {
-                case ImageType.Backdrop:
-                case ImageType.Primary:
-                case ImageType.Thumb:
-                    var imagePath = $"{typeof(Plugin).Namespace}.Images.{type}.png";
-                    var response = new DynamicImageResponse
-                    {
-                        Format = ImageFormat.Png,
-                        HasImage = true,
-                        Stream = GetType().Assembly.GetManifestResourceStream(imagePath)
-                    };
+                switch (type)
+                {
+                    case ImageType.Backdrop:
+                    case ImageType.Primary:
+                    case ImageType.Thumb:
+                        var imagePath = $"{typeof(Plugin).Namespace}.Images.{type}.png";
 
-                    return Task.FromResult(response);
-                default:
-                    throw new ArgumentException($"Unsupperted image type {type}");
+                        _logger.LogDebug("{ImagePath}", imagePath);
+
+                        var response = new DynamicImageResponse
+                        {
+                            Format = ImageFormat.Png,
+                            HasImage = true,
+                            Stream = GetType().Assembly.GetManifestResourceStream(imagePath)
+                        };
+
+                        return Task.FromResult(response);
+                    default:
+                        throw new ArgumentException($"Unsupperted image type {type}");
+                }
             }
         }
 
@@ -125,6 +131,8 @@ namespace Jellyfin.Plugin.TuneIn.Channels
                     uri = _tuneInUriProvider.BrowseUri;
                 }
 
+                _logger.LogDebug("{RequestUri}", uri);
+
                 try
                 {
                     var results = await _opmlProcessor.GetManyAsync(uri, cancellationToken)
@@ -149,6 +157,9 @@ namespace Jellyfin.Plugin.TuneIn.Channels
                     };
 
                     var items = source.ToList();
+
+                    _logger.LogDebug("{Method} results {Count}", nameof(GetChannelItems), items?.Count);
+
                     return new ChannelItemResult
                     {
                         Items = items
@@ -182,6 +193,8 @@ namespace Jellyfin.Plugin.TuneIn.Channels
         {
             using (_logger.BeginScope("{Method} {Uri}", nameof(GetChannelItemMediaInfo), id))
             {
+                _logger.LogDebug("{GetChannelItemId}", id);
+
                 try
                 {
                     var uri = new Uri(id);
@@ -189,6 +202,13 @@ namespace Jellyfin.Plugin.TuneIn.Channels
                                         .GetManyAsync(uri, cancellationToken)
                                         .ToListAsync(cancellationToken)
                                         .ConfigureAwait(false);
+
+                    _logger.LogDebug("{Method} results {Count}", nameof(GetChannelItemMediaInfo), items?.Count);
+
+                    if (items is null)
+                    {
+                        return Enumerable.Empty<MediaSourceInfo>();
+                    }
 
                     return items;
                 }
@@ -203,7 +223,7 @@ namespace Jellyfin.Plugin.TuneIn.Channels
         /// <inheritdoc/>
         public string GetCacheKey(string userId)
         {
-            return $"{Name}-{userId}-{_plugin.Configuration.Username}-{_plugin.Configuration.LatitudeLongitude}-{DataVersion}";
+            return $"{Name}-{userId}-{_plugin.Configuration}-{DataVersion}";
         }
 
         /// <inheritdoc/>
@@ -213,6 +233,8 @@ namespace Jellyfin.Plugin.TuneIn.Channels
             {
                 var uri = _tuneInUriProvider.FavoritesUri ?? _tuneInUriProvider.PopularUri;
 
+                _logger.LogDebug("ChannelLatestMediaSearch {Uri}", uri);
+
                 var query = new InternalChannelItemQuery
                 {
                     FolderId = uri.ToString()
@@ -220,7 +242,8 @@ namespace Jellyfin.Plugin.TuneIn.Channels
 
                 var results = await GetChannelItems(query, cancellationToken).ConfigureAwait(false);
 
-                if (results == null)
+                _logger.LogDebug("{Method} results {Count}", nameof(GetLatestMedia), results?.Items.Count);
+                if (results is null)
                 {
                     return Enumerable.Empty<ChannelItemInfo>();
                 }
@@ -239,6 +262,8 @@ namespace Jellyfin.Plugin.TuneIn.Channels
                     return Enumerable.Empty<ChannelItemInfo>();
                 }
 
+                _logger.LogDebug("{SearchTerm}", searchInfo.SearchTerm);
+
                 var query = new InternalChannelItemQuery
                 {
                     FolderId = _tuneInUriProvider.GetSearchUri(searchInfo.SearchTerm).ToString()
@@ -246,7 +271,8 @@ namespace Jellyfin.Plugin.TuneIn.Channels
 
                 var results = await GetChannelItems(query, cancellationToken).ConfigureAwait(false);
 
-                if (results == null)
+                _logger.LogDebug("{Method} results {Count}", nameof(Search), results?.Items.Count);
+                if (results is null)
                 {
                     return Enumerable.Empty<ChannelItemInfo>();
                 }

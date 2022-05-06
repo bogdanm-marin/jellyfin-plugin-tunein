@@ -34,7 +34,7 @@ namespace Jellyfin.Plugin.TuneIn
         public override Guid Id { get; } = Guid.Parse(Identifier);
 
         /// <inheritdoc/>
-        public override string Name => "New TuneIn";
+        public override string Name => "TuneIn";
 
         /// <inheritdoc/>
         public IEnumerable<PluginPageInfo> GetPages()

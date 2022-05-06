@@ -8,7 +8,7 @@ using SkiaSharp;
 namespace Jellyfin.Plugin.TuneIn.Controllers
 {
     /// <summary>
-    /// TuneIn Controller.
+    /// Tune In image controller.
     /// </summary>
     [ApiController]
     [Route("api/v1/TuneIn/[controller]")]
@@ -77,7 +77,7 @@ namespace Jellyfin.Plugin.TuneIn.Controllers
         }
 
         /// <summary>
-        /// Returns Image File.
+        /// Returns Embeded Image File.
         /// </summary>
         /// <param name="imageFile"> Image file name.</param>
         /// <returns>Image Stream Content.</returns>
