@@ -14,10 +14,21 @@
                 <form class="TuneInConfigurationForm">
 
                     <div class="inputContainer">
-                        <input type="text" is="emby-input" id="txtUsername" label="Your Tune In username:"/>
+                        <input type="text" is="emby-input" id="txtUsername" label="Your Tune In username:" />
                     </div>
 
-                    <br/>
+                    <div class="inputContainer">
+                        <input type="text" is="emby-input" id="txtPartnerId" label="Your Tune In partner id:" />
+                    </div>
+
+                    <div class="inputContainer">
+                        <input type="text" is="emby-input" id="txtLatitudeLongitude" label="Your Latitude,Longitude:" />
+                        <div class="fieldDescription">
+                            Your <i>Latitude,Longitude</i> can be found at <a target="_blank" href="https://www.latlong.net/">https://www.latlong.net/</a>.
+                        </div>
+                    </div>
+
+                    <br />
                     <div>
                         <button is="emby-button" type="submit" class="raised button-submit block"><span>Save</span></button>
                     </div>
@@ -40,6 +51,8 @@
                 ApiClient.getPluginConfiguration(TuneInConfigurationPage.pluginUniqueId).then(function (config) {
 
                     $('#txtUsername', page).val(config.Username || "");
+                    $('#txtPartnerId', page).val(config.PartnerId || "");
+                    $('#txtLatitudeLongitude', page).val(config.LatitudeLongitude || "");
 
                     Dashboard.hideLoadingMsg();
                 });
@@ -54,8 +67,12 @@
                 ApiClient.getPluginConfiguration(TuneInConfigurationPage.pluginUniqueId).then(function (config) {
 
                     var Username = $('#txtUsername', form).val();
+                    var PartnerId = $('#txtPartnerId', form).val();
+                    var LatitudeLongitude = $('#txtLatitudeLongitude', form).val();
 
                     config.Username = Username ? Username : null;
+                    config.PartnerId = PartnerId ? PartnerId : null;
+                    config.LatitudeLongitude = LatitudeLongitude ? LatitudeLongitude : null;
 
                     ApiClient.updatePluginConfiguration(TuneInConfigurationPage.pluginUniqueId, config).then(Dashboard.processPluginConfigurationUpdateResult);
                 });

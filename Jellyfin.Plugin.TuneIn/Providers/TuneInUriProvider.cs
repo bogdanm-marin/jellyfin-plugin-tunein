@@ -9,13 +9,8 @@ namespace Jellyfin.Plugin.TuneIn.Providers
     /// </summary>
     public class TuneInUriProvider
     {
-#pragma warning disable S1075 // URIs should not be hardcoded
-        private const string RootUri = "http://opml.radiotime.com";
-#pragma warning restore S1075 // URIs should not be hardcoded
-
         private readonly Uri _browseUri;
         private readonly Uri _searchUri;
-
         private readonly Plugin _plugin;
 
         /// <summary>
@@ -30,6 +25,11 @@ namespace Jellyfin.Plugin.TuneIn.Providers
             _browseUri = new Uri(rootUri, "Browse.ashx");
             _searchUri = new Uri(rootUri, "Search.ashx");
         }
+
+        /// <summary>
+        /// Gets TuneIn API root uri.
+        /// </summary>
+        public string RootUri => "http://opml.radiotime.com";
 
         /// <summary>
         /// Gets browse Uri for TuneIn.
@@ -126,7 +126,11 @@ namespace Jellyfin.Plugin.TuneIn.Providers
         {
             var queryParams = HttpUtility.ParseQueryString(query);
             queryParams.Add("formats", "mp3,aac,ogg,hls");
-            queryParams.Add("partnerId", "uD1X52pA");
+
+            if (!string.IsNullOrEmpty(_plugin.Configuration.PartnerId))
+            {
+                queryParams.Add("partnerId", _plugin.Configuration.PartnerId);
+            }
 
             if (!string.IsNullOrWhiteSpace(_plugin.Configuration.Username))
             {
