@@ -50,49 +50,47 @@ namespace Jellyfin.Plugin.TuneIn.Providers.Handlers.UriHandlers
 
             using (_logger.BeginScope("Uri {Uri}", uri))
             {
-                using (var httpClient = _httpClientFactory.CreateClient("TuneIn"))
+                using var httpClient = _httpClientFactory.CreateClient("TuneIn");
+                HttpResponseMessage? response = null;
+
+                var hasException = false;
+
+                try
                 {
-                    HttpResponseMessage? response = null;
+                    var responseTask = httpClient
+                                            .GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+                                            .ConfigureAwait(false);
 
-                    var hasException = false;
+                    response = await responseTask;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "{Message}", ex);
+                    hasException = true;
+                }
 
-                    try
+                if (hasException)
+                {
+                    yield break;
+                }
+
+                using (response!)
+                {
+                    if (!response!.IsSuccessStatusCode)
                     {
-                        var responseTask = httpClient
-                                                .GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
-                                                .ConfigureAwait(false);
-
-                        response = await responseTask;
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "{Message}", ex);
-                        hasException = true;
-                    }
-
-                    if (hasException)
-                    {
+                        _logger.LogWarning("{StatusCode}", response.StatusCode);
                         yield break;
                     }
 
-                    using (response!)
+                    foreach (var handler in _handlers)
                     {
-                        if (!response!.IsSuccessStatusCode)
-                        {
-                            _logger.LogWarning("{StatusCode}", response.StatusCode);
-                            yield break;
-                        }
+                        var source = handler.HandleAsync(response, cancellationToken)
+                                            .WithCancellation(cancellationToken)
+                                            .ConfigureAwait(false);
 
-                        foreach (var handler in _handlers)
+                        await foreach (var item in source)
                         {
-                            var source = handler.HandleAsync(response, cancellationToken)
-                                                .WithCancellation(cancellationToken)
-                                                .ConfigureAwait(false);
-
-                            await foreach (var item in source)
-                            {
-                                yield return item;
-                            }
+                            yield return item;
                         }
                     }
                 }

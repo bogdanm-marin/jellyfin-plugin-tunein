@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -117,7 +118,7 @@ namespace Jellyfin.Plugin.TuneIn.Channels
         }
 
         /// <inheritdoc/>
-        public async Task<ChannelItemResult> GetChannelItems(InternalChannelItemQuery query, CancellationToken cancellationToken)
+        public async Task<ChannelItemResult> GetChannelItems([NotNull] InternalChannelItemQuery query, CancellationToken cancellationToken)
         {
             using (_logger.BeginScope("{Method} {FolderId}", nameof(GetChannelItems), query.FolderId))
             {
@@ -160,10 +161,15 @@ namespace Jellyfin.Plugin.TuneIn.Channels
 
                     _logger.LogDebug("{Method} results {Count}", nameof(GetChannelItems), items?.Count);
 
-                    return new ChannelItemResult
+                    var result = new ChannelItemResult();
+
+                    if (items is not null)
                     {
-                        Items = items
-                    };
+                        result.Items = items;
+                        result.TotalRecordCount = items.Count;
+                    }
+
+                    return result;
                 }
                 catch (AggregateException aggEx)
                 {

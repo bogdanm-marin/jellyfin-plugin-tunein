@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -19,7 +20,6 @@ namespace Jellyfin.Plugin.TuneIn.Providers
     public class ChannelItemInfoProvider
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly IServerApplicationHost _serverApplicationHost;
         private readonly ILogger<ChannelItemInfoProvider> _logger;
         private readonly string _localUrl;
 
@@ -31,11 +31,10 @@ namespace Jellyfin.Plugin.TuneIn.Providers
         /// <param name="logger">ILogger.</param>
         public ChannelItemInfoProvider(
             IHttpClientFactory httpClientFactory,
-            IServerApplicationHost serverApplicationHost,
+            [NotNull] IServerApplicationHost serverApplicationHost,
             ILogger<ChannelItemInfoProvider> logger)
         {
             _httpClientFactory = httpClientFactory;
-            _serverApplicationHost = serverApplicationHost;
             _logger = logger;
 
             _localUrl = serverApplicationHost.GetLoopbackHttpApiUrl();
@@ -49,71 +48,67 @@ namespace Jellyfin.Plugin.TuneIn.Providers
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<IEnumerable<ChannelItemInfo>> GetManyAsync(Uri mediaUrl, CancellationToken cancellationToken)
         {
-            const string unavailable = "unavailable";
+            const string Unavailable = "unavailable";
             _logger.LogDebug("TuneIn url {Url}", mediaUrl);
-            using (var httpClient = _httpClientFactory.CreateClient())
-            {
-                var response = await httpClient.GetAsync(mediaUrl, cancellationToken).ConfigureAwait(false);
+            using var httpClient = _httpClientFactory.CreateClient();
+            var response = await httpClient.GetAsync(mediaUrl, cancellationToken).ConfigureAwait(false);
 
-                response.EnsureSuccessStatusCode();
+            response.EnsureSuccessStatusCode();
 
-                using (var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false))
-                {
-                    var xmlDocument = await XElement.LoadAsync(stream, LoadOptions.None, cancellationToken).ConfigureAwait(false);
+            using var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+            var xmlDocument = await XElement.LoadAsync(stream, LoadOptions.None, cancellationToken).ConfigureAwait(false);
 
-                    var types = new HashSet<string> { "link", "audio" };
-                    var items = from outline in xmlDocument.Descendants("outline")
-                                let type = outline.Attribute("type")
-                                let url = outline.Attribute("URL")
-                                let key = outline.Attribute("key")
-                                where type != null && url != null && !unavailable.Equals(key?.Value, StringComparison.OrdinalIgnoreCase)
-                                where types.Contains(type.Value)
-                                let text = outline.Attribute("text")
-                                let image = outline.Attribute("image")
-                                let subtext = outline.Attribute("subtext")
-                                let bitrare = outline.Attribute("bitrate")
-                                let reliability = outline.Attribute("reliability")
-                                let formats = outline.Attribute("formats")
-                                let current_track = outline.Attribute("current_track")
-                                let item = outline.Attribute("item")
-                                let stream_type = outline.Attribute("stream_type")
-                                let playing_image = outline.Attribute("playing_image")
-                                select new ChannelItemInfo
+            var types = new HashSet<string> { "link", "audio" };
+            var items = from outline in xmlDocument.Descendants("outline")
+                        let type = outline.Attribute("type")
+                        let url = outline.Attribute("URL")
+                        let key = outline.Attribute("key")
+                        where type != null && url != null && !Unavailable.Equals(key?.Value, StringComparison.OrdinalIgnoreCase)
+                        where types.Contains(type.Value)
+                        let text = outline.Attribute("text")
+                        let image = outline.Attribute("image")
+                        let subtext = outline.Attribute("subtext")
+                        let bitrare = outline.Attribute("bitrate")
+                        let reliability = outline.Attribute("reliability")
+                        let formats = outline.Attribute("formats")
+                        let current_track = outline.Attribute("current_track")
+                        let item = outline.Attribute("item")
+                        let stream_type = outline.Attribute("stream_type")
+                        let playing_image = outline.Attribute("playing_image")
+                        select new ChannelItemInfo
+                        {
+                            Id = url?.Value,
+                            Name = text?.Value,
+
+                            Type = type.Value switch
+                            {
+                                "link" => ChannelItemType.Folder,
+                                "audio" => ChannelItemType.Media,
+                                _ => default
+                            },
+                            ImageUrl = image?.Value ?? GetDefaultImage(key?.Value) ?? GetDynamicImage(text?.Value),
+                            ContentType = type.Value switch
+                            {
+                                "audio" => item?.Value switch
                                 {
-                                    Id = url?.Value,
-                                    Name = text?.Value,
+                                    "station" => ChannelMediaContentType.Song,
+                                    "topic" => ChannelMediaContentType.Podcast,
+                                    _ => default,
+                                },
+                                "link" => item?.Value switch
+                                {
+                                    "show" => ChannelMediaContentType.Podcast,
+                                    _ => default,
+                                },
+                                _ => default
+                            },
+                            MediaType = ChannelMediaType.Audio,
+                            OriginalTitle = current_track?.Value,
+                            CommunityRating = (int?)reliability,
+                            OfficialRating = reliability?.Value,
+                        };
 
-                                    Type = type.Value switch
-                                    {
-                                        "link" => ChannelItemType.Folder,
-                                        "audio" => ChannelItemType.Media,
-                                        _ => default
-                                    },
-                                    ImageUrl = image?.Value ?? GetDefaultImage(key?.Value) ?? GetDynamicImage(text?.Value),
-                                    ContentType = type.Value switch
-                                    {
-                                        "audio" => item?.Value switch
-                                        {
-                                            "station" => ChannelMediaContentType.Song,
-                                            "topic" => ChannelMediaContentType.Podcast,
-                                            _ => default,
-                                        },
-                                        "link" => item?.Value switch
-                                        {
-                                            "show" => ChannelMediaContentType.Podcast,
-                                            _ => default,
-                                        },
-                                        _ => default
-                                    },
-                                    MediaType = ChannelMediaType.Audio,
-                                    OriginalTitle = current_track?.Value,
-                                    CommunityRating = (int?)reliability,
-                                    OfficialRating = reliability?.Value,
-                                };
-
-                    return items;
-                }
-            }
+            return items;
         }
 
         private string? GetDefaultImage(string? name) => name switch
