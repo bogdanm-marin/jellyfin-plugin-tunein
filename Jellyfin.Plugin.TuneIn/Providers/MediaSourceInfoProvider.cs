@@ -16,22 +16,18 @@ namespace Jellyfin.Plugin.TuneIn.Providers
     /// </summary>
     public class MediaSourceInfoProvider
     {
-        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<MediaSourceInfoProvider> _logger;
         private readonly IList<IUriHandler> _handlers;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MediaSourceInfoProvider"/> class.
         /// </summary>
-        /// <param name="httpClientFactory">HttpClient Factory.</param>
         /// <param name="logger">Logger.</param>
         /// <param name="handlers"><see cref="IUriHandler" /> handlers.</param>
         public MediaSourceInfoProvider(
-            IHttpClientFactory httpClientFactory,
             ILogger<MediaSourceInfoProvider> logger,
             IEnumerable<IUriHandler> handlers)
         {
-            _httpClientFactory = httpClientFactory;
             _logger = logger;
             _handlers = handlers.OrderBy(_ => _.Order).ToList();
         }
@@ -44,22 +40,25 @@ namespace Jellyfin.Plugin.TuneIn.Providers
         /// <returns>Async Enumeration of <see cref="MediaSourceInfo"/>.</returns>
         public async IAsyncEnumerable<MediaSourceInfo> GetManyAsync(Uri uri, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            foreach (var handler in _handlers)
+            using (_logger.BeginScope("{Method} {Uri}", nameof(GetManyAsync), uri))
             {
-                bool hasItems = false;
-                var source = handler.HandleAsync(uri, cancellationToken)
-                                    .WithCancellation(cancellationToken)
-                                    .ConfigureAwait(false);
-
-                await foreach (var item in source)
+                foreach (var handler in _handlers)
                 {
-                    hasItems = true;
-                    yield return item;
-                }
+                    bool hasItems = false;
+                    var source = handler.HandleAsync(uri, cancellationToken)
+                                        .WithCancellation(cancellationToken)
+                                        .ConfigureAwait(false);
 
-                if (hasItems)
-                {
-                    yield break;
+                    await foreach (var item in source)
+                    {
+                        hasItems = true;
+                        yield return item;
+                    }
+
+                    if (hasItems)
+                    {
+                        yield break;
+                    }
                 }
             }
         }

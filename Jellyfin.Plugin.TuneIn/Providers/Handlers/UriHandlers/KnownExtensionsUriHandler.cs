@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,10 +28,7 @@ namespace Jellyfin.Plugin.TuneIn.Providers.Handlers.UriHandlers
         };
 
         /// <inheritdoc/>
-        public async IAsyncEnumerable<MediaSourceInfo> HandleAsync(
-            Uri uri,
-            [EnumeratorCancellation]
-            CancellationToken cancellationToken)
+        public async IAsyncEnumerable<MediaSourceInfo> HandleAsync([NotNull] Uri uri, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             if (!uri.SchemeIsHttpOrHttps())
             {
@@ -39,7 +37,7 @@ namespace Jellyfin.Plugin.TuneIn.Providers.Handlers.UriHandlers
 
             var requestedUri = uri.ToString();
 
-            var extensions = requestedUri.Substring(requestedUri.LastIndexOf('.'));
+            var extensions = requestedUri[requestedUri.LastIndexOf('.')..];
 
             if (!SupportedExtensions.TryGetValue(extensions, out var extensionType))
             {

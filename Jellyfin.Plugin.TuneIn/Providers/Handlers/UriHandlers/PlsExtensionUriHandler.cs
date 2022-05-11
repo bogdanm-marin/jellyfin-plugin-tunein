@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
@@ -41,7 +42,7 @@ namespace Jellyfin.Plugin.TuneIn.Providers.Handlers.UriHandlers
         public int Order => 2;
 
         /// <inheritdoc/>
-        public async IAsyncEnumerable<MediaSourceInfo> HandleAsync(Uri uri, [EnumeratorCancellation] CancellationToken cancellationToken)
+        public async IAsyncEnumerable<MediaSourceInfo> HandleAsync([NotNull] Uri uri, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             if (!uri.SchemeIsHttpOrHttps())
             {
@@ -55,60 +56,58 @@ namespace Jellyfin.Plugin.TuneIn.Providers.Handlers.UriHandlers
 
             using (_logger.BeginScope("Uri {Uri}", uri))
             {
-                using (var httpClient = _httpClientFactory.CreateClient("TuneIn"))
+                using var httpClient = _httpClientFactory.CreateClient("TuneIn");
+                HttpResponseMessage? response = null;
+
+                var hasException = false;
+
+                try
                 {
-                    HttpResponseMessage? response = null;
+                    var responseTask = httpClient
+                                            .GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+                                            .ConfigureAwait(false);
 
-                    var hasException = false;
+                    response = await responseTask;
+                }
+                catch (HttpRequestException ex)
+                {
+                    _logger.LogError(ex, "{Message}", ex);
+                    hasException = true;
+                }
 
-                    try
+                if (hasException)
+                {
+                    yield break;
+                }
+
+                using (response!)
+                {
+                    if (!response!.IsSuccessStatusCode)
                     {
-                        var responseTask = httpClient
-                                                .GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
-                                                .ConfigureAwait(false);
-
-                        response = await responseTask;
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "{Message}", ex);
-                        hasException = true;
-                    }
-
-                    if (hasException)
-                    {
+                        _logger.LogWarning("{StatusCode}", response.StatusCode);
                         yield break;
                     }
 
-                    using (response!)
+                    var content = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+
+                    var referencedUris = content
+                                    .Split('\n')
+                                    .Select(s => s.Trim())
+                                    .Where(s => !string.IsNullOrEmpty(s))
+                                    .Where(s => s.StartsWith("File", StringComparison.OrdinalIgnoreCase))
+                                    .Select(s => s[(s.IndexOf('=', StringComparison.OrdinalIgnoreCase) + 1)..])
+                                    .Select(s => new Uri(s));
+
+                    var mediaSourceInfoProvider = _serviceProvider.GetRequiredService<MediaSourceInfoProvider>();
+                    foreach (var childUri in referencedUris)
                     {
-                        if (!response!.IsSuccessStatusCode)
+                        var sourceAsync = mediaSourceInfoProvider.GetManyAsync(childUri, cancellationToken)
+                                            .WithCancellation(cancellationToken)
+                                            .ConfigureAwait(false);
+
+                        await foreach (var item in sourceAsync)
                         {
-                            _logger.LogWarning("{StatusCode}", response.StatusCode);
-                            yield break;
-                        }
-
-                        var content = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-
-                        var referencedUris = content
-                                        .Split('\n')
-                                        .Select(s => s.Trim())
-                                        .Where(s => !string.IsNullOrEmpty(s))
-                                        .Where(s => s.StartsWith("File", StringComparison.OrdinalIgnoreCase))
-                                        .Select(s => s[(s.IndexOf('=', StringComparison.OrdinalIgnoreCase) + 1)..])
-                                        .Select(s => new Uri(s));
-
-                        var mediaSourceInfoProvider = _serviceProvider.GetRequiredService<MediaSourceInfoProvider>();
-                        foreach (var childUri in referencedUris)
-                        {
-                            var sourceAsync = mediaSourceInfoProvider.GetManyAsync(childUri, cancellationToken)
-                                                .WithCancellation(cancellationToken)
-                                                .ConfigureAwait(false);
-
-                            await foreach (var item in sourceAsync)
-                            {
-                                yield return item;
-                            }
+                            yield return item;
                         }
                     }
                 }

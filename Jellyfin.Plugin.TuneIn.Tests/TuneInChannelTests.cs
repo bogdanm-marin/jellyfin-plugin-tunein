@@ -167,7 +167,7 @@ namespace Jellyfin.Plugin.TuneIn.Tests
             });
         }
 
-        private void MockRequests_Favorites(MockHttpMessageHandler mockHttpMessageHander)
+        private static void MockRequests_Favorites(MockHttpMessageHandler mockHttpMessageHander)
         {
             mockHttpMessageHander
                 .WhenGet("http://opml.radiotime.com/Browse.ashx?c=presets&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername")
@@ -367,7 +367,7 @@ namespace Jellyfin.Plugin.TuneIn.Tests
             });
         }
 
-        private void MockRequests_Bucharest(MockHttpMessageHandler mockHttpMessageHander)
+        private static void MockRequests_Bucharest(MockHttpMessageHandler mockHttpMessageHander)
         {
             mockHttpMessageHander
                 .WhenGet("http://opml.radiotime.com/Browse.ashx?id=r101052&formats=mp3,aac,ogg,flash,hls&partnerid=TestPartnerId&username=TestUsername")
@@ -507,17 +507,17 @@ namespace Jellyfin.Plugin.TuneIn.Tests
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r101052&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername&filter=g3",
                         Name = "Adult Hits",
                         ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Adult+Hits-w480-h480-fs36.png",
-                        OriginalTitle = default(String),
+                        OriginalTitle = default,
                         Type = ChannelItemType.Folder,
-                        ContentType = default(ChannelMediaContentType),
+                        ContentType = default,
                     },
                     new ChannelItemInfo{
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r101052&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername&filter=g115",
                         Name = "Alternative Rock",
                         ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Alternative+Rock-w480-h480-fs36.png",
-                        OriginalTitle = default(String),
+                        OriginalTitle = default,
                         Type = ChannelItemType.Folder,
-                        ContentType = default(ChannelMediaContentType),
+                        ContentType = default,
                     },
             });
         }
@@ -525,47 +525,43 @@ namespace Jellyfin.Plugin.TuneIn.Tests
         [Fact]
         public void Should_Return_Supported_Immages()
         {
-            using(var scope = _serviceProvider.CreateScope())
+            using var scope = _serviceProvider.CreateScope();
+            var target = scope.ServiceProvider.GetRequiredService<TuneInChannel>();
+
+            var supportedChannelImages = target.GetSupportedChannelImages();
+
+            supportedChannelImages
+                .Should()
+                .BeEquivalentTo(new[]
             {
-                var target = scope.ServiceProvider.GetRequiredService<TuneInChannel>();
-
-                var supportedChannelImages =  target.GetSupportedChannelImages();
-
-                supportedChannelImages
-                    .Should()
-                    .BeEquivalentTo(new[]
-                {
                     ImageType.Backdrop,
                     ImageType.Primary,
                     ImageType.Thumb
-                });
-            }
+            });
         }
 
 
         [Fact]
         public async Task Should_Return_Supported_Images()
         {
-            using (var scope = _serviceProvider.CreateScope())
+            using var scope = _serviceProvider.CreateScope();
+            var target = scope.ServiceProvider.GetRequiredService<TuneInChannel>();
+
+            var supportedChannelImages = target.GetSupportedChannelImages();
+
+            foreach (var imageType in supportedChannelImages)
             {
-                var target = scope.ServiceProvider.GetRequiredService<TuneInChannel>();
+                var image = await target.GetChannelImage(imageType, CancellationToken.None);
 
-                var supportedChannelImages = target.GetSupportedChannelImages();
+                image.Should().NotBeNull("Null image {0}", imageType);
 
-                foreach(var imageType in supportedChannelImages)
+                image.Should().BeEquivalentTo(new
                 {
-                    var image = await target.GetChannelImage(imageType, CancellationToken.None);
+                    Format = ImageFormat.Png,
+                    HasImage = true,
+                });
 
-                    image.Should().NotBeNull("Null image {0}", imageType);
-
-                    image.Should().BeEquivalentTo(new
-                    {
-                        Format = ImageFormat.Png,
-                        HasImage = true,
-                    });
-
-                    image.Stream.Should().NotBeNull("Null Stream for {0}", imageType);
-                }
+                image.Stream.Should().NotBeNull("Null Stream for {0}", imageType);
             }
         }
     }

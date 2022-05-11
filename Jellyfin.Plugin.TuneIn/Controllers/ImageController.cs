@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Web;
 using Jellyfin.Plugin.TuneIn.Extensions;
@@ -20,7 +21,7 @@ namespace Jellyfin.Plugin.TuneIn.Controllers
         /// <param name="imageAttributes">Image attributes.</param>
         /// <returns>Image Result.</returns>
         [HttpGet("generate/{Text}-w{Width}-h{Height}-fs{FontSize}.{Format=png}")]
-        public IActionResult Generate([FromRoute, FromQuery] ImageAttributes imageAttributes)
+        public IActionResult Generate([FromRoute, FromQuery, NotNull] ImageAttributes imageAttributes)
         {
             if (!Enum.TryParse<SKEncodedImageFormat>(imageAttributes.Format, true, out var imageFormat))
             {
@@ -42,7 +43,7 @@ namespace Jellyfin.Plugin.TuneIn.Controllers
                 return BadRequest(ModelState);
             }
 
-            var memoryStream = new MemoryStream();
+            byte[] fileContent;
 
             using (var skBitmap = new SKBitmap(imageAttributes.Width, imageAttributes.Height))
             {
@@ -65,15 +66,11 @@ namespace Jellyfin.Plugin.TuneIn.Controllers
                     canvas.DrawText(decodedText!, imageAttributes.Width / 2f, imageAttributes.Height / 2f, imageAttributes.Width - (imageAttributes.TextPadding * 2), paint);
                 }
 
-                using (var encoder = skBitmap.Encode(imageFormat, 100))
-                {
-                    encoder.SaveTo(memoryStream);
-                }
+                using var encoder = skBitmap.Encode(imageFormat, 100);
+                fileContent = encoder.ToArray();
             }
 
-            memoryStream.Position = 0;
-
-            return File(memoryStream, $"image/{imageFormat.ToString().ToLowerInvariant()}");
+            return File(fileContent, $"image/{imageFormat.ToString().ToLowerInvariant()}");
         }
 
         /// <summary>

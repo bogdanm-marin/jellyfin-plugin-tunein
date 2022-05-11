@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -117,7 +118,7 @@ namespace Jellyfin.Plugin.TuneIn.Channels
         }
 
         /// <inheritdoc/>
-        public async Task<ChannelItemResult> GetChannelItems(InternalChannelItemQuery query, CancellationToken cancellationToken)
+        public async Task<ChannelItemResult> GetChannelItems([NotNull] InternalChannelItemQuery query, CancellationToken cancellationToken)
         {
             using (_logger.BeginScope("{Method} {FolderId}", nameof(GetChannelItems), query.FolderId))
             {
