@@ -4,24 +4,34 @@ type: docker
 name: deploy
 
 steps:
-
 - name: clean
   image: mcr.microsoft.com/dotnet/sdk:6.0
   commands:
   - dotnet clean
 
-- name: restore
-  image: mcr.microsoft.com/dotnet/sdk:6.0
-  commands:
-  - dotnet restore
-
 - name: build
   image: mcr.microsoft.com/dotnet/sdk:6.0
   commands:
-  - dotnet build
+  - dotnet build --configuration Release
 
 - name: test
   image: mcr.microsoft.com/dotnet/sdk:6.0
   commands:
-  - dotnet test
+  - dotnet test --configuration Release
 
+- name: bundle
+  image: alpine/git
+  commands:
+  - apk add zip
+  - mkdir -p publish
+  - zip -j publish/tunein_$(git describe --tags --abbrev=0).zip ./Jellyfin.Plugin.TuneIn/bin/Release/net*/*.dll
+
+- name: upload
+  image: alpine/curl
+  environment:
+    UPLOAD_USER:
+      from_secret: tunein_upload_user
+    UPLOAD_URL:
+      from_secret: tunein_upload_URL
+  commands:
+  - ls publish/*.zip | { read filename; curl --insecure --user $UPLOAD_USER -T $filename $UPLOAD_URL }
