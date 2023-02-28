@@ -34,4 +34,4 @@ steps:
     UPLOAD_URL:
       from_secret: tunein_upload_URL
   commands:
-  - ls publish/*.zip | { read filename; curl --insecure --user $UPLOAD_USER -T '$filename' '$UPLOAD_URL' ; }
+  - ls publish/*.zip | { read filename; curl --insecure --user $UPLOAD_USER -T $$filename $UPLOAD_URL ; }
