@@ -42,7 +42,7 @@ namespace Jellyfin.Plugin.TuneIn.Providers.Handlers.MediaTypeHandlers
                 Name = requestedUri,
                 Path = requestedUri,
                 Protocol = MediaProtocol.Http,
-                Container = "aac",
+                Container = "mpegts",
                 IsRemote = true,
                 SupportsProbing = true,
                 SupportsTranscoding = true,
