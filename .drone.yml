@@ -24,8 +24,10 @@ steps:
   commands:
   - apk add zip
   - mkdir -p publish
-  - echo "DRONE_TAG=$DRONE_TAG"
-  - zip -j publish/tunein_$(git describe --tags --abbrev=0).zip ./Jellyfin.Plugin.TuneIn/bin/Release/net*/*.dll
+  - zip -j publish/tunein_$DRONE_TAG.zip ./Jellyfin.Plugin.TuneIn/bin/Release/net*/*.dll
+  when:
+    target:
+    - production
 
 - name: upload
   image: alpine/curl
@@ -36,3 +38,6 @@ steps:
       from_secret: tunein_upload_URL
   commands:
   - ls publish/*.zip | { read filename; curl --insecure --user $UPLOAD_USER -T $$filename $UPLOAD_URL ; }
+  when:
+    target:
+    - production
