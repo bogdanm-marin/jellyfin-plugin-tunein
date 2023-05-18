@@ -30,6 +30,8 @@ steps:
   - apk add zip
   - mkdir -p publish
   - zip -j publish/tunein_$$(git describe --tags --abbrev=0).zip ./Jellyfin.Plugin.TuneIn/bin/Release/net*/*.dll
+  - echo 'checksum'
+  - md5sum docker/tunein_*.zip | awk '{print $1, substr($2,9)}'
   when:
     target:
     - production
