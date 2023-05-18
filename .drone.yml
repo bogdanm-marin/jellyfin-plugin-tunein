@@ -33,7 +33,7 @@ steps:
   image: plugins/s3
   settings:
     endpoint:
-      from_secret: tunein_upload_url
+      from_secret: minio_url
     bucket:
       from_secret: tunein_upload_bucket
     access_key:
