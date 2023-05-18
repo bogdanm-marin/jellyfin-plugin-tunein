@@ -31,24 +31,20 @@ steps:
 
 - name: upload
   image: plugins/s3
-  environment:
-    UPLOAD_URL:
-      from_secret: tunein_upload_url
-    UPLOAD_BUCKET:
-      from_secret: tunein_upload_bucket
-    UPLOAD_ACCESS_KEY:
-      from_secret: tunein_upload_access_key
-    UPLOAD_SECRET_KEY:
-      from_secret: tunein_upload_secret_key
-    UPLOAD_TARGET:
-      from_secret: tunein_upload_target
   settings:
-    endpoint: $UPLOAD_URL
-    bucket: $UPLOAD_BUCKET
-    access_key: $UPLOAD_ACCESS_KEY
-    secret_key: $UPLOAD_SECRET_KEY
-    target: $UPLOAD_TARGET
+    endpoint:
+      from_secret: tunein_upload_url
+    bucket:
+      from_secret: tunein_upload_bucket
+    access_key:
+      from_secret: tunein_upload_access_key
+    secret_key:
+      from_secret: tunein_upload_secret_key
+    target:
+      from_secret: tunein_upload_target
+    path_style: true
     source: publish/*.zip
+    strip_prefix: publish/
   when:
     target:
     - production
