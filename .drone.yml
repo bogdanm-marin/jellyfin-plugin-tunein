@@ -3,6 +3,9 @@ kind: pipeline
 type: docker
 name: deploy
 
+clone:
+  tags: true
+
 steps:
 - name: clean
   image: mcr.microsoft.com/dotnet/sdk:6.0
