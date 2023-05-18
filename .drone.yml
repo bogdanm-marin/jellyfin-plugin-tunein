@@ -30,14 +30,25 @@ steps:
     - production
 
 - name: upload
-  image: alpine/curl
+  image: plugins/s3
   environment:
-    UPLOAD_USER:
-      from_secret: tunein_upload_user
     UPLOAD_URL:
-      from_secret: tunein_upload_URL
-  commands:
-  - ls publish/*.zip | { read filename; curl --insecure --user $UPLOAD_USER -T $$filename $UPLOAD_URL ; }
+      from_secret: tunein_upload_url
+    UPLOAD_BUCKET:
+      from_secret: tunein_upload_bucket
+    UPLOAD_ACCESS_KEY:
+      from_secret: tunein_upload_access_key
+    UPLOAD_SECRET_KEY:
+      from_secret: tunein_upload_secret_key
+    UPLOAD_TARGET:
+      from_secret: tunein_upload_target
+  settings:
+    endpoint: $UPLOAD_URL
+    bucket: $UPLOAD_BUCKET
+    access_key: $UPLOAD_ACCESS_KEY
+    secret_key: $UPLOAD_SECRET_KEY
+    target: $UPLOAD_TARGET
+    source: publish/*.zip
   when:
     target:
     - production
