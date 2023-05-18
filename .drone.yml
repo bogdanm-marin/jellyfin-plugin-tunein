@@ -24,7 +24,7 @@ steps:
   commands:
   - apk add zip
   - mkdir -p publish
-  - zip -j publish/tunein_$DRONE_TAG.zip ./Jellyfin.Plugin.TuneIn/bin/Release/net*/*.dll
+  - zip -j publish/tunein_$$(git describe --tags).zip ./Jellyfin.Plugin.TuneIn/bin/Release/net*/*.dll
   when:
     target:
     - production
