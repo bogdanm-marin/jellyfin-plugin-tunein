@@ -42,12 +42,12 @@ steps:
 - name: upload
   image: alpine/curl
   environment:
-    WEBDAV_PASSWORD:
-      from_secret: SFTPGO_WEBDAV_JELLYFIN_PASSWORD
     WEBDAV_USERNAME:
-      from_secret: SFTPGO_WEBDAV_JELLYFIN_USER
+      from_secret: SFTPGO_JELLYFIN_USER
+    WEBDAV_PASSWORD:
+      from_secret: SFTPGO_JELLYFIN_PASSWORD
   commands:
-  - curl "$WEBDAV_ENDPOINT/jellyfin/repository/plugins/" --user "$WEBDAV_PASSWORD:$WEBDAV_USERNAME" --insecure -T publish/*.zip
+  - curl "$WEBDAV_ENDPOINT/jellyfin/repository/plugins/" --user "$WEBDAV_USERNAME:$WEBDAV_PASSWORD" --insecure -T publish/*.zip
   when:
     target:
     - production
