@@ -3,6 +3,9 @@ kind: pipeline
 type: docker
 name: deploy
 
+environment:
+    WEBDAV_ENDPOINT: https://webdav.sftpgo.home
+
 steps:
 - name: fetch
   image: alpine/git
@@ -37,15 +40,14 @@ steps:
     - production
 
 - name: upload
-  image: alpine/git
+  image: alpine/curl
   environment:
     WEBDAV_PASSWORD:
       from_secret: SFTPGO_WEBDAV_JELLYFIN_PASSWORD
     WEBDAV_USERNAME:
       from_secret: SFTPGO_WEBDAV_JELLYFIN_USER
-    WEBDAV_URL: https://webdav.sftpgo.home
   commands:
-  - curl "$WEBDAV_URL/jellyfin/repository/plugins/" --user "$WEBDAV_PASSWORD:$WEBDAV_USERNAME" --insecure -T publish/*.zip
+  - curl "$WEBDAV_ENDPOINT/jellyfin/repository/plugins/" --user "$WEBDAV_PASSWORD:$WEBDAV_USERNAME" --insecure -T publish/*.zip
   when:
     target:
     - production
