@@ -4,6 +4,11 @@ type: docker
 name: deploy
 
 steps:
+- name: test repository
+  image: alpine/git
+  commands:
+  - curl 'https://gitea.catbit.eu/bogdan/jellyfin-plugin-tunein.git' --head --insecure
+
 - name: fetch
   image: alpine/git
   commands:
@@ -37,21 +42,15 @@ steps:
     - production
 
 - name: upload
-  image: plugins/s3
-  settings:
-    endpoint:
-      from_secret: minio_url
-    bucket:
-      from_secret: tunein_upload_bucket
-    access_key:
-      from_secret: tunein_upload_access_key
-    secret_key:
-      from_secret: tunein_upload_secret_key
-    target:
-      from_secret: tunein_upload_target
-    path_style: true
-    source: publish/*.zip
-    strip_prefix: publish/
+  image: alpine/git
+  environment:
+    WEBDAV_PASSWORD:
+      from_secret: SFTPGO_WEBDAV_JELLYFIN_PASSWORD
+    WEBDAV_USERNAME:
+      from_secret: SFTPGO_WEBDAV_JELLYFIN_USER
+    WEBDAV_URL: https://webdav.sftpgo.home
+  commands:
+  - curl "$WEBDAV_URL/jellyfin/repository/plugins/" --user "$WEBDAV_PASSWORD:$WEBDAV_USERNAME" --insecure -T publish/*.zip
   when:
     target:
     - production
