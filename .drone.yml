@@ -4,7 +4,7 @@ type: docker
 name: deploy
 
 environment:
-    WEBDAV_ENDPOINT: https://webdav.sftpgo.home
+    WEBDAV_ENDPOINT: https://webdav.catbit.eu
 
 steps:
 - name: fetch
@@ -47,7 +47,7 @@ steps:
     WEBDAV_PASSWORD:
       from_secret: SFTPGO_JELLYFIN_PASSWORD
   commands:
-  - curl "$WEBDAV_ENDPOINT/jellyfin/repository/plugins/" --user "$WEBDAV_USERNAME:$WEBDAV_PASSWORD" --insecure -T publish/*.zip
+  - curl "$WEBDAV_ENDPOINT/jellyfin/repository/plugins/" --user "$WEBDAV_USERNAME:$WEBDAV_PASSWORD" -T publish/*.zip
   when:
     target:
     - production
