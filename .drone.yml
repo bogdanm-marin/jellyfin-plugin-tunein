@@ -10,7 +10,6 @@ steps:
 - name: test repository
   image: alpine/curl
   commands:
-  - ping gitea.catbit.eu
   - curl 'https://gitea.catbit.eu/bogdan/jellyfin-plugin-tunein.git' --head --insecure
 
 - name: fetch
