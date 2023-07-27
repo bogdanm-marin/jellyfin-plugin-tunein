@@ -8,7 +8,7 @@ clone:
 
 steps:
 - name: test repository
-  image: alpine/git
+  image: alpine/curl
   commands:
   - curl 'https://gitea.catbit.eu/bogdan/jellyfin-plugin-tunein.git' --head --insecure
 
