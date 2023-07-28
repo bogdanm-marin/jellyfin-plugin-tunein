@@ -19,6 +19,8 @@ namespace Jellyfin.Plugin.TuneIn.Providers.Handlers.MediaTypeHandlers
     {
         private Dictionary<string, (string Container, string Codec)> SupportedMediaTypes { get; } = new()
         {
+            { "audio/x-flac", ("flac", "flac") },
+            { "audio/flac", ("flac", "flac") },
             { "audio/x-aac", ("aac", "aac") },
             { "audio/aacp", ("aac", "aac") },
             { "audio/aac", ("aac", "aac") },
