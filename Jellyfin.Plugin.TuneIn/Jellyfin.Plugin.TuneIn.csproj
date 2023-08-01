@@ -4,7 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>Jellyfin.Plugin.TuneIn</RootNamespace>
     <AssemblyVersion>1.0.8.11</AssemblyVersion>
-    <FileVersion>1.0.8.10</FileVersion>
+    <FileVersion>1.0.8.11</FileVersion>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Nullable>enable</Nullable>
