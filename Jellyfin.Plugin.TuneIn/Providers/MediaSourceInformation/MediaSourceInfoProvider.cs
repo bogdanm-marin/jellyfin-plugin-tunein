@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,12 +8,12 @@ using Jellyfin.Plugin.TuneIn.Providers.Handlers.UriHandlers;
 using MediaBrowser.Model.Dto;
 using Microsoft.Extensions.Logging;
 
-namespace Jellyfin.Plugin.TuneIn.Providers
+namespace Jellyfin.Plugin.TuneIn.Providers.MediaSourceInformation
 {
     /// <summary>
     /// MediaSourceInfoProvider.
     /// </summary>
-    public class MediaSourceInfoProvider
+    public class MediaSourceInfoProvider : IMediaSourceInfoProvider
     {
         private readonly ILogger<MediaSourceInfoProvider> _logger;
         private readonly IList<IUriHandler> _handlers;
@@ -33,6 +32,11 @@ namespace Jellyfin.Plugin.TuneIn.Providers
         }
 
         /// <summary>
+        /// Gets the Order of the provider.
+        /// </summary>
+        public int Order => 1;
+
+        /// <summary>
         /// Processes uri and returns an enumeration of <see cref="MediaSourceInfo"/>.
         /// </summary>
         /// <param name="uri">Media uri.</param>
@@ -44,7 +48,7 @@ namespace Jellyfin.Plugin.TuneIn.Providers
             {
                 foreach (var handler in _handlers)
                 {
-                    bool hasItems = false;
+                    var hasItems = false;
                     var source = handler.HandleAsync(uri, cancellationToken)
                                         .WithCancellation(cancellationToken)
                                         .ConfigureAwait(false);

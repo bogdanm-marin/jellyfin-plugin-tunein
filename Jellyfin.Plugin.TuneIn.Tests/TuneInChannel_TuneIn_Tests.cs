@@ -24,11 +24,11 @@ using Xunit.Abstractions;
 
 namespace Jellyfin.Plugin.TuneIn.Tests
 {
-    public class TuneInChannel_M3u8_Tests
+    public class TuneInChannel_TuneIn_Tests
     {
         private readonly ServiceProvider _serviceProvider;
 
-        public TuneInChannel_M3u8_Tests(ITestOutputHelper output)
+        public TuneInChannel_TuneIn_Tests(ITestOutputHelper output)
         {
             var serviceRegistrator = new PluginServiceRegistrator();
 
@@ -62,7 +62,7 @@ namespace Jellyfin.Plugin.TuneIn.Tests
         }
 
         [Fact]
-        public async Task Should_Process_M3u8_With_Valid_M3u9_MediaType_Audio_X_Mpegurl()
+        public async Task TuneIn_Should_Process_M3u8_With_Valid_M3u9_MediaType_Audio_X_Mpegurl()
         {
             using var scope = _serviceProvider.CreateScope();
 
@@ -71,7 +71,24 @@ namespace Jellyfin.Plugin.TuneIn.Tests
 
             httpHandler
                 .WhenGet($"{url}&render=json")
-                .Respond(HttpStatusCode.NotFound);
+                .RespondOk(
+                content: @"
+ { ""head"": {	""status"": ""200""}, ""body"": [
+ { ""element"" : ""audio"", 
+""url"": ""http://cdnlive.shooowit.net/rtvalive/smil:channel5.smil/playlist.m3u8"",
+""reliability"": 98,
+""bitrate"": 128,
+""media_type"": ""aac"",
+""position"": 0,
+""player_width"": 640,
+""player_height"": 480,
+""is_hls_advanced"": ""false"",
+""live_seek_stream"": ""false"",
+""guide_id"": ""e78772074"",
+""is_ad_clipped_content_enabled"": ""false"",
+""is_direct"": true }] }
+",
+                contentType: "application/json");
 
             httpHandler
                 .WhenGet(url)
@@ -113,7 +130,7 @@ media-ujg8jo7xj_b250000_311473.aac
 
             httpHandler
                 .WhenGet("http://cdnlive.shooowit.net/rtvalive/smil:channel5.smil/media-ujg8jo7xj_b250000_311471.aac")
-                .RespondOk(contentType: "audio/x-aac");
+                .RespondOk( contentType: "audio/x-aac" );
 
             httpHandler
                 .WhenGet("http://cdnlive.shooowit.net/rtvalive/smil:channel5.smil/media-ujg8jo7xj_b250000_311472.aac")
@@ -137,8 +154,8 @@ media-ujg8jo7xj_b250000_311473.aac
             {
                             new MediaSourceInfo
                             {
-                                Id =  "http://cdnlive.shooowit.net/rtvalive/smil:channel5.smil/playlist.m3u8",
-                                Name = "http://cdnlive.shooowit.net/rtvalive/smil:channel5.smil/playlist.m3u8",
+                                Id =  "http://opml.radiotime.com/Tune.ashx?id=s15273&formats=hls&partnerId=TestPartnerId&username=TestUsername",
+                                Name = "http://opml.radiotime.com/Tune.ashx?id=s15273&formats=hls&partnerId=TestPartnerId&username=TestUsername",
                                 Path = "http://cdnlive.shooowit.net/rtvalive/smil:channel5.smil/playlist.m3u8",
                                 Container = "aac",
                                 Protocol = MediaProtocol.Http,
@@ -146,14 +163,15 @@ media-ujg8jo7xj_b250000_311473.aac
                                 IsInfiniteStream = true,
                                 SupportsDirectPlay = true,
                                 SupportsDirectStream = true,
-                                RunTimeTicks = 0,
-                                TranscodingSubProtocol = "hls",
+//                                RunTimeTicks = 0,
+//                                TranscodingSubProtocol = "hls",
                                 MediaStreams = new []
                                 {
                                     new MediaStream
                                     {
                                         Index = -1,
                                         Codec = "aac",
+                                        BitRate = 128
                                     },
                                 }
                             },
@@ -161,7 +179,7 @@ media-ujg8jo7xj_b250000_311473.aac
         }
 
         [Fact]
-        public async Task Should_Process_M3u8_With_Invalid_M3u9_MediaType_Text_Html()
+        public async Task TuneIn_Should_Process_M3u8_With_Invalid_M3u9_MediaType_Text_Html()
         {
             using var scope = _serviceProvider.CreateScope();
 
@@ -170,7 +188,24 @@ media-ujg8jo7xj_b250000_311473.aac
 
             httpHandler
                 .WhenGet($"{url}&render=json")
-                .Respond(HttpStatusCode.NotFound);
+                .RespondOk(
+                content: @"
+ { ""head"": {	""status"": ""200""}, ""body"": [
+ { ""element"" : ""audio"", 
+""url"": ""http://edge126.rdsnet.ro:84/profm/profm.mp3"",
+""reliability"": 98,
+""bitrate"": 128,
+""media_type"": ""aac"",
+""position"": 0,
+""player_width"": 640,
+""player_height"": 480,
+""is_hls_advanced"": ""false"",
+""live_seek_stream"": ""false"",
+""guide_id"": ""e78772074"",
+""is_ad_clipped_content_enabled"": ""false"",
+""is_direct"": true }] }
+",
+                contentType: "application/json");
 
             httpHandler
                 .WhenGet(url)
@@ -206,24 +241,25 @@ https://live4ro.antenaplay.ro/radiozu/radiozu-48000.m3u8
             {
                  new MediaSourceInfo
             {
-                Id = "https://ivm.antenaplay.ro/liveaudio/radiozu/playlist.m3u8",
-                Name = "https://ivm.antenaplay.ro/liveaudio/radiozu/playlist.m3u8",
-                Path = "https://ivm.antenaplay.ro/liveaudio/radiozu/playlist.m3u8",
+                Id = "http://opml.radiotime.com/Tune.ashx?id=s97051&formats=mp3,aac,ogg,hls&partnerId=TestPartnerId&username=TestUsername",
+                Name = "http://opml.radiotime.com/Tune.ashx?id=s97051&formats=mp3,aac,ogg,hls&partnerId=TestPartnerId&username=TestUsername",
+                Path = "http://edge126.rdsnet.ro:84/profm/profm.mp3",
                 Protocol = MediaProtocol.Http,
                 Container = "aac",
                 IsRemote = true,
                 IsInfiniteStream = true,
                 SupportsDirectPlay = true,
                 SupportsDirectStream = true,
-                TranscodingSubProtocol = "hls",
-                RunTimeTicks = 0,
+//                TranscodingSubProtocol = "hls",
+//                RunTimeTicks = 0,
                 MediaStreams = new []
                 {
                             new MediaStream
                             {
                                 Index = -1,
                                 Type = MediaStreamType.Audio,
-                                Codec = "aac"
+                                Codec = "aac",
+                                BitRate = 128
                             }
                 },
             }

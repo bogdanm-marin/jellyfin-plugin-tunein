@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Jellyfin.Plugin.TuneIn.Providers;
+using Jellyfin.Plugin.TuneIn.Providers.MediaSourceInformation;
 using MediaBrowser.Controller.Channels;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Channels;
@@ -21,7 +22,7 @@ namespace Jellyfin.Plugin.TuneIn.Channels
     public class TuneInChannel : IChannel, IRequiresMediaInfoCallback, IHasCacheKey, ISupportsMediaProbe, ISupportsLatestMedia, ISearchableChannel
     {
         private readonly ChannelItemInfoProvider _opmlProcessor;
-        private readonly MediaSourceInfoProvider _mediaSourceInfoProvider;
+        private readonly MediaSourceInfoProviderManager _mediaSourceInfoProvider;
         private readonly TuneInUriProvider _tuneInUriProvider;
         private readonly Plugin _plugin;
         private readonly ILogger<TuneInChannel> _logger;
@@ -36,7 +37,7 @@ namespace Jellyfin.Plugin.TuneIn.Channels
         /// <param name="logger">ILogger.</param>
         public TuneInChannel(
             ChannelItemInfoProvider opmlProcessor,
-            MediaSourceInfoProvider mediaSourceInfoProvider,
+            MediaSourceInfoProviderManager mediaSourceInfoProvider,
             TuneInUriProvider tuneInUriProvider,
             Plugin plugin,
             ILogger<TuneInChannel> logger)
