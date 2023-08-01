@@ -21,6 +21,7 @@ namespace Jellyfin.Plugin.TuneIn.Providers.Handlers.UriHandlers
 
         private Dictionary<string, (string Container, string Codec)> SupportedExtensions { get; } = new()
         {
+            { ".flac", ("flac", "flac") },
             { ".aac", ("aac", "aac") },
             { ".aacp", ("aac", "aac") },
             { ".mp3", ("mp3", "mp3") },

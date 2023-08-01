@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -38,12 +39,13 @@ namespace Jellyfin.Plugin.TuneIn.Tests
                 .AddLogging(b => b.AddXUnit(output))
                 .AddTransient<IApplicationPaths>(_ => Substitute.For<IApplicationPaths>())
                 .AddTransient<IXmlSerializer>(_ => Substitute.For<IXmlSerializer>())
-                .AddSingleton<IServerApplicationHost>(s => {
+                .AddScoped<IServerApplicationHost>(s =>
+                {
                     var service = Substitute.For<IServerApplicationHost>();
                     service.GetApiUrlForLocalAccess().ReturnsForAnyArgs("http://127.0.0.1:8096");
                     return service;
                 })
-                .AddSingleton<MockHttpMessageHandler>()
+                .AddScoped<MockHttpMessageHandler>()
                 .AddTransient<HttpClient>(_ => new HttpClient(_.GetRequiredService<MockHttpMessageHandler>()))
                 .AddScoped<IHttpClientFactory>(s =>
                 {
@@ -67,6 +69,10 @@ namespace Jellyfin.Plugin.TuneIn.Tests
 
             var httpHandler = scope.ServiceProvider.GetRequiredService<MockHttpMessageHandler>();
             var url = "http://opml.radiotime.com/Tune.ashx?id=s15273&formats=hls&partnerId=TestPartnerId&username=TestUsername";
+
+            httpHandler
+                .WhenGet($"{url}&render=json")
+                .Respond(HttpStatusCode.NotFound);
 
             httpHandler
                 .WhenGet(url)
@@ -151,6 +157,10 @@ Version=2
 
             var httpHandler = scope.ServiceProvider.GetRequiredService<MockHttpMessageHandler>();
             var url = "http://opml.radiotime.com/Tune.ashx?id=s97051&formats=mp3,aac,ogg,hls&partnerId=TestPartnerId&username=TestUsername";
+
+            httpHandler
+                .WhenGet($"{url}&render=json")
+                .Respond(HttpStatusCode.NotFound);
 
             httpHandler
                 .WhenGet(url)

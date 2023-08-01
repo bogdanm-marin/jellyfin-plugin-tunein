@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Jellyfin.Plugin.TuneIn.Extensions;
+using Jellyfin.Plugin.TuneIn.Providers.MediaSourceInformation;
 using MediaBrowser.Model.Dto;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

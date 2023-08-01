@@ -125,7 +125,7 @@ namespace Jellyfin.Plugin.TuneIn.Providers
         private NameValueCollection GetQueryParams(string query)
         {
             var queryParams = HttpUtility.ParseQueryString(query);
-            queryParams.Add("formats", "mp3,aac,ogg,hls");
+            queryParams.Add("formats", "mp3,aac,ogg,hls,flac,wma,wav");
 
             if (!string.IsNullOrEmpty(_plugin.Configuration.PartnerId))
             {

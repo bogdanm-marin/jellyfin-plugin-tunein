@@ -2,6 +2,7 @@ using Jellyfin.Plugin.TuneIn.Channels;
 using Jellyfin.Plugin.TuneIn.Providers;
 using Jellyfin.Plugin.TuneIn.Providers.Handlers.MediaTypeHandlers;
 using Jellyfin.Plugin.TuneIn.Providers.Handlers.UriHandlers;
+using Jellyfin.Plugin.TuneIn.Providers.MediaSourceInformation;
 using MediaBrowser.Common.Plugins;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,23 +20,27 @@ namespace Jellyfin.Plugin.TuneIn
             serviceCollection.AddScoped<Plugin>();
 
             serviceCollection
-                .AddSingleton<ChannelItemInfoProvider>()
-                .AddSingleton<MediaSourceInfoProvider>()
-                .AddSingleton<TuneInUriProvider>()
+                .AddScoped<ChannelItemInfoProvider>()
+                .AddScoped<TuneInUriProvider>()
+                .AddScoped<MediaSourceInfoProviderManager>()
+                .AddScoped<IMediaSourceInfoProvider, MediaSourceInfoProvider>()
+                .AddScoped<MediaSourceInfoProvider>()
+                .AddScoped<IMediaSourceInfoProvider, TuneInMediaSourceInfoProvider>()
+
                 ;
 
             serviceCollection
-                .AddSingleton<IUriHandler, KnownExtensionsUriHandler>()
-                .AddSingleton<IUriHandler, M3U8ExtensionUriHandler>()
-                .AddSingleton<IUriHandler, PlsExtensionUriHandler>()
-                .AddSingleton<IUriHandler, ProcessUriHandler>()
+                .AddScoped<IUriHandler, KnownExtensionsUriHandler>()
+                .AddScoped<IUriHandler, M3U8ExtensionUriHandler>()
+                .AddScoped<IUriHandler, PlsExtensionUriHandler>()
+                .AddScoped<IUriHandler, ProcessUriHandler>()
                 ;
 
             serviceCollection
-                .AddSingleton<IHttpResponseMessageHandler, MpegUrlMediaTypeHandler>()
-                .AddSingleton<IHttpResponseMessageHandler, AppleMpegUrlMediaTypeHandler>()
-                .AddSingleton<IHttpResponseMessageHandler, KnownMediaTypeHandler>()
-                .AddSingleton<IHttpResponseMessageHandler, ScplsMediaTypeHandler>()
+                .AddScoped<IHttpResponseMessageHandler, MpegUrlMediaTypeHandler>()
+                .AddScoped<IHttpResponseMessageHandler, AppleMpegUrlMediaTypeHandler>()
+                .AddScoped<IHttpResponseMessageHandler, KnownMediaTypeHandler>()
+                .AddScoped<IHttpResponseMessageHandler, ScplsMediaTypeHandler>()
                 ;
         }
     }
