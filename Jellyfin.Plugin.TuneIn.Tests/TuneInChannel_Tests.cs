@@ -6,20 +6,15 @@ using MediaBrowser.Controller;
 using MediaBrowser.Controller.Channels;
 using MediaBrowser.Model.Channels;
 using MediaBrowser.Model.Drawing;
-using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
-using MediaBrowser.Model.MediaInfo;
 using MediaBrowser.Model.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using RichardSzalay.MockHttp;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -27,11 +22,11 @@ using Xunit.Abstractions;
 
 namespace Jellyfin.Plugin.TuneIn.Tests
 {
-    public class TuneInChannelTests
+    public class TuneInChannel_Tests
     {
         private readonly ServiceProvider _serviceProvider;
 
-        public TuneInChannelTests(ITestOutputHelper output)
+        public TuneInChannel_Tests(ITestOutputHelper output)
         {
             var serviceRegistrator = new PluginServiceRegistrator();
 
@@ -72,20 +67,18 @@ namespace Jellyfin.Plugin.TuneIn.Tests
 
             var mockHttpMessageHander = scope.ServiceProvider.GetRequiredService<MockHttpMessageHandler>();
 
-            var url = "http://opml.radiotime.com/Browse.ashx?formats=mp3,aac,ogg,flash,hls&partnerid=TestPartnerId&username=TestUsername";
-            var embededContent = $"{typeof(TuneInChannelTests).Namespace}.TestFiles.Root.xml";
+            mockHttpMessageHander
+                .WhenGet("http://opml.radiotime.com/Describe.ashx?c=genres")
+                .RespondOkWithEmbededResource<TuneInChannel_M3u8_Tests>("TestFiles.Genres.xml")
+                ;
 
+            var url = "http://opml.radiotime.com/Browse.ashx?formats=mp3,aac,ogg,flash,hls&partnerid=TestPartnerId&username=TestUsername";
             var cancellationToken = CancellationToken.None;
 
-
             mockHttpMessageHander
-                .When(HttpMethod.Get, url)
-                .Respond(() =>
-                    Task.FromResult(
-                           new HttpResponseMessage(HttpStatusCode.OK)
-                           {
-                               Content = new StreamContent(typeof(TuneInChannelTests).Assembly.GetManifestResourceStream(embededContent)!)
-                           }));
+                .WhenGet(url)
+                .RespondOkWithEmbededResource<TuneInChannel_M3u8_Tests>("TestFiles.Root.xml")
+                ;
 
 
             var target = scope.ServiceProvider.GetRequiredService<TuneInChannel>();
@@ -112,6 +105,7 @@ namespace Jellyfin.Plugin.TuneIn.Tests
                         Id = "http://opml.radiotime.com/Browse.ashx?c=presets&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Type = ChannelItemType.Folder,
                         Name = "Favorites",
+                        SeriesName = "Favorites",
                         IsLiveStream = false,
                         ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/tunein-myfavs.png"
                 },
@@ -119,6 +113,7 @@ namespace Jellyfin.Plugin.TuneIn.Tests
                         Id = "http://opml.radiotime.com/Browse.ashx?c=local&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Type = ChannelItemType.Folder,
                         Name = "Local Radio",
+                        SeriesName = "Local Radio",
                         IsLiveStream = false,
                         ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/tunein-localradio.png"
                 },
@@ -126,6 +121,7 @@ namespace Jellyfin.Plugin.TuneIn.Tests
                         Id = "http://opml.radiotime.com/Browse.ashx?c=music&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Type = ChannelItemType.Folder,
                         Name = "Music",
+                        SeriesName = "Music",
                         IsLiveStream = false,
                         ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/tunein-music.png"
                 },
@@ -133,6 +129,7 @@ namespace Jellyfin.Plugin.TuneIn.Tests
                         Id = "http://opml.radiotime.com/Browse.ashx?c=talk&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Type = ChannelItemType.Folder,
                         Name = "Talk",
+                        SeriesName = "Talk",
                         IsLiveStream = false,
                         ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/tunein-talk.png"
                 },
@@ -140,6 +137,7 @@ namespace Jellyfin.Plugin.TuneIn.Tests
                         Id = "http://opml.radiotime.com/Browse.ashx?c=sports&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Type = ChannelItemType.Folder,
                         Name = "Sports",
+                        SeriesName = "Sports",
                         IsLiveStream = false,
                         ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/tunein-sports.png"
                 },
@@ -147,6 +145,7 @@ namespace Jellyfin.Plugin.TuneIn.Tests
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r0&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Type = ChannelItemType.Folder,
                         Name = "By Location",
+                        SeriesName = "By Location",
                         IsLiveStream = false,
                         ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/tunein-bylocation.png"
                 },
@@ -154,6 +153,7 @@ namespace Jellyfin.Plugin.TuneIn.Tests
                         Id = "http://opml.radiotime.com/Browse.ashx?c=lang&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Type = ChannelItemType.Folder,
                         Name = "By Language",
+                        SeriesName = "By Language",
                         IsLiveStream = false,
                         ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/tunein-bylanguage.png"
                 },
@@ -161,6 +161,7 @@ namespace Jellyfin.Plugin.TuneIn.Tests
                         Id = "http://opml.radiotime.com/Browse.ashx?c=podcast&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Type = ChannelItemType.Folder,
                         Name = "Podcasts",
+                        SeriesName = "Podcasts",
                         IsLiveStream = false,
                         ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/tunein-podcasts.png"
                 },
@@ -171,7 +172,7 @@ namespace Jellyfin.Plugin.TuneIn.Tests
         {
             mockHttpMessageHander
                 .WhenGet("http://opml.radiotime.com/Browse.ashx?c=presets&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername")
-                .RespondOk(typeof(TuneInChannelTests).Assembly.GetManifestResourceStream($"{typeof(TuneInChannelTests).Namespace}.TestFiles.Favorites.xml")!);
+                .RespondOk(typeof(TuneInChannel_Tests).Assembly.GetManifestResourceStream($"{typeof(TuneInChannel_Tests).Namespace}.TestFiles.Favorites.xml")!);
 
             mockHttpMessageHander
                 .WhenGet("http://opml.radiotime.com/Tune.ashx?id=s87949&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername")
@@ -223,6 +224,10 @@ namespace Jellyfin.Plugin.TuneIn.Tests
 
             var mockHttpMessageHander = scope.ServiceProvider.GetRequiredService<MockHttpMessageHandler>();
 
+            mockHttpMessageHander
+                .WhenGet("http://opml.radiotime.com/Describe.ashx?c=genres")
+                .RespondOkWithEmbededResource<TuneInChannel_M3u8_Tests>("TestFiles.Genres.xml")
+                ;
             var url = "http://opml.radiotime.com/Browse.ashx?c=presets&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername";
 
             var cancellationToken = CancellationToken.None;
@@ -246,20 +251,32 @@ namespace Jellyfin.Plugin.TuneIn.Tests
                     new ChannelItemInfo{
                         Id = "http://opml.radiotime.com/Tune.ashx?id=s87949&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Name = "100.6 | Rock FM Romania (Alternative Rock)",
+                        SeriesName = "100.6 | Rock FM Romania (Alternative Rock)",
+                        Overview = "Rockaholic cu Ciprian Muntele",
                         ImageUrl = "http://cdn-radiotime-logos.tunein.com/s87949q.png",
                         OriginalTitle = "Rockaholic cu Ciprian Muntele",
                         OfficialRating = "97",
                         CommunityRating = 97,
-                        ContentType = ChannelMediaContentType.Song
+                        ContentType = ChannelMediaContentType.Song,
+                        Genres = new List<string>
+                                    {
+                                        "Alternative Rock"
+                                    }
                     },
                     new ChannelItemInfo{
                         Id = "http://opml.radiotime.com/Tune.ashx?id=s2770&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Name = "102.8 | PROFM (Top 40 & Pop Music)",
+                        SeriesName = "102.8 | PROFM (Top 40 & Pop Music)",
+                        Overview ="PROFM OPEN RADIO",
                         ImageUrl = "http://cdn-profiles.tunein.com/s2770/images/logoq.jpg?t=162363",
                         OriginalTitle = "PROFM OPEN RADIO",
                         OfficialRating = "99",
                         CommunityRating = 99,
-                        ContentType = ChannelMediaContentType.Song
+                        ContentType = ChannelMediaContentType.Song,
+                        Genres = new List<string>
+                                    {
+                                        "Top 40 & Pop Music"
+                                    }
                     }
             });
         }
@@ -272,20 +289,18 @@ namespace Jellyfin.Plugin.TuneIn.Tests
 
             var mockHttpMessageHander = scope.ServiceProvider.GetRequiredService<MockHttpMessageHandler>();
 
-            var url = "http://opml.radiotime.com/Browse.ashx?id=r101287&formats=mp3,aac,ogg,flash,hls&partnerid=TestPartnerId&username=TestUsername";
-            var embededContent = $"{typeof(TuneInChannelTests).Namespace}.TestFiles.Romania.xml";
+            mockHttpMessageHander
+                .WhenGet("http://opml.radiotime.com/Describe.ashx?c=genres")
+                .RespondOkWithEmbededResource<TuneInChannel_M3u8_Tests>("TestFiles.Genres.xml")
+                ;
 
+            var url = "http://opml.radiotime.com/Browse.ashx?id=r101287&formats=mp3,aac,ogg,flash,hls&partnerid=TestPartnerId&username=TestUsername";
             var cancellationToken = CancellationToken.None;
 
 
             mockHttpMessageHander
-                .When(HttpMethod.Get, url)
-                .Respond(() =>
-                    Task.FromResult(
-                       new HttpResponseMessage(HttpStatusCode.OK)
-                       {
-                           Content = new StreamContent(typeof(TuneInChannelTests).Assembly.GetManifestResourceStream(embededContent)!)
-                       }));
+                .WhenGet(url)
+                .RespondOkWithEmbededResource<TuneInChannel_Tests>("TestFiles.Romania.xml");
 
 
             var target = ActivatorUtilities.CreateInstance<TuneInChannel>(scope.ServiceProvider);
@@ -371,7 +386,7 @@ namespace Jellyfin.Plugin.TuneIn.Tests
         {
             mockHttpMessageHander
                 .WhenGet("http://opml.radiotime.com/Browse.ashx?id=r101052&formats=mp3,aac,ogg,flash,hls&partnerid=TestPartnerId&username=TestUsername")
-                .RespondOk(typeof(TuneInChannelTests).Assembly.GetManifestResourceStream($"{typeof(TuneInChannelTests).Namespace}.TestFiles.Bucharest.xml")!);
+                .RespondOkWithEmbededResource<TuneInChannel_Tests>("TestFiles.Bucharest.xml");
 
             mockHttpMessageHander
                 .WhenGet("http://opml.radiotime.com/Tune.ashx?id=s87949&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername")
@@ -440,6 +455,7 @@ namespace Jellyfin.Plugin.TuneIn.Tests
                 .WhenHead("http://edge76.rdsnet.ro:84/digifm/digifm.mp3")
                 .Respond(HttpStatusCode.BadRequest);
         }
+
         [Fact]
         public async Task Should_Receive_Bucharest_Stations()
         {
@@ -447,6 +463,11 @@ namespace Jellyfin.Plugin.TuneIn.Tests
             using var scope = _serviceProvider.CreateScope();
 
             var mockHttpMessageHander = scope.ServiceProvider.GetRequiredService<MockHttpMessageHandler>();
+
+            mockHttpMessageHander
+                .WhenGet("http://opml.radiotime.com/Describe.ashx?c=genres")
+                .RespondOkWithEmbededResource<TuneInChannel_M3u8_Tests>("TestFiles.Genres.xml")
+                ;
 
             var url = "http://opml.radiotime.com/Browse.ashx?id=r101052&formats=mp3,aac,ogg,flash,hls&partnerid=TestPartnerId&username=TestUsername";
 
@@ -476,36 +497,46 @@ namespace Jellyfin.Plugin.TuneIn.Tests
                     new ChannelItemInfo{
                         Id = "http://opml.radiotime.com/Tune.ashx?id=s257792&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Name = "Digi FM 97.9 (World Music)",
+                        SeriesName = "Digi FM 97.9 (World Music)",
+                        Overview = "Ramon Cotizo",
                         ImageUrl = "http://cdn-profiles.tunein.com/s257792/images/logoq.jpg?t=636419",
                         OriginalTitle = "Ramon Cotizo",
                         Type = ChannelItemType.Media,
                         ContentType = ChannelMediaContentType.Song,
                         OfficialRating = "99",
-                        CommunityRating = 99
+                        CommunityRating = 99,
+                        Genres = new List<string> { "World Music" }
                     },
                     new ChannelItemInfo{
                         Id = "http://opml.radiotime.com/Tune.ashx?id=s8334&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Name = "Europa FM 106.7 (Adult Hits)",
+                        SeriesName = "Europa FM 106.7 (Adult Hits)",
+                        Overview = "Europa Express",
                         ImageUrl = "http://cdn-profiles.tunein.com/s8334/images/logoq.png",
                         OriginalTitle = "Europa Express",
                         Type = ChannelItemType.Media,
                         ContentType = ChannelMediaContentType.Song,
                         OfficialRating = "94",
-                        CommunityRating = 94
+                        CommunityRating = 94,
+                        Genres = new List<string> { "Adult Hits" }
                     },
                     new ChannelItemInfo{
                         Id = "http://opml.radiotime.com/Tune.ashx?id=s17700&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername",
                         Name = "Kiss FM Romania 96.1 (Top 40 & Pop Music)",
+                        SeriesName = "Kiss FM Romania 96.1 (Top 40 & Pop Music)",
+                        Overview = "Daily Kiss - Andreea Berghea",
                         ImageUrl = "http://cdn-profiles.tunein.com/s17700/images/logoq.png?t=1",
                         OriginalTitle = "Daily Kiss - Andreea Berghea",
                         Type = ChannelItemType.Media,
                         ContentType = ChannelMediaContentType.Song,
                         OfficialRating = "98",
-                        CommunityRating = 98
+                        CommunityRating = 98,
+                        Genres = new List<string> { "Top 40 & Pop Music" }
                     },
                     new ChannelItemInfo{
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r101052&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername&filter=g3",
                         Name = "Adult Hits",
+                        SeriesName = "Adult Hits",
                         ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Adult+Hits-w480-h480-fs36.png",
                         OriginalTitle = default,
                         Type = ChannelItemType.Folder,
@@ -514,6 +545,7 @@ namespace Jellyfin.Plugin.TuneIn.Tests
                     new ChannelItemInfo{
                         Id = "http://opml.radiotime.com/Browse.ashx?id=r101052&formats=mp3,aac,ogg,flash,hls&partnerId=TestPartnerId&username=TestUsername&filter=g115",
                         Name = "Alternative Rock",
+                        SeriesName = "Alternative Rock",
                         ImageUrl = "http://127.0.0.1:8096/api/v1/TuneIn/Image/generate/Alternative+Rock-w480-h480-fs36.png",
                         OriginalTitle = default,
                         Type = ChannelItemType.Folder,

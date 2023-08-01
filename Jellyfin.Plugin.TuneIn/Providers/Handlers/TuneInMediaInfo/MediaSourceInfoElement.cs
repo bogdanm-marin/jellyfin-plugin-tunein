@@ -5,7 +5,7 @@ namespace Jellyfin.Plugin.TuneIn.Providers.Handlers.TuneInMediaInfo
     /// <summary>
     /// Body section definition.
     /// </summary>
-    public class Body
+    public class MediaSourceInfoElement
     {
         /// <summary>
         /// Gets or Sets Element.

@@ -1,5 +1,6 @@
 using Jellyfin.Plugin.TuneIn.Channels;
 using Jellyfin.Plugin.TuneIn.Providers;
+using Jellyfin.Plugin.TuneIn.Providers.Genres;
 using Jellyfin.Plugin.TuneIn.Providers.Handlers.MediaTypeHandlers;
 using Jellyfin.Plugin.TuneIn.Providers.Handlers.UriHandlers;
 using Jellyfin.Plugin.TuneIn.Providers.MediaSourceInformation;
@@ -16,6 +17,11 @@ namespace Jellyfin.Plugin.TuneIn
         /// <inheritdoc/>
         public void RegisterServices(IServiceCollection serviceCollection)
         {
+            serviceCollection
+                .AddMemoryCache()
+                .AddSingleton<CacheProvider>()
+                ;
+
             serviceCollection.AddScoped<TuneInChannel>();
             serviceCollection.AddScoped<Plugin>();
 
@@ -26,6 +32,7 @@ namespace Jellyfin.Plugin.TuneIn
                 .AddScoped<IMediaSourceInfoProvider, MediaSourceInfoProvider>()
                 .AddScoped<MediaSourceInfoProvider>()
                 .AddScoped<IMediaSourceInfoProvider, TuneInMediaSourceInfoProvider>()
+                .AddScoped<GenresProvider>()
 
                 ;
 

@@ -10,12 +10,14 @@
   <ItemGroup>
     <None Remove="TestFiles\Bucharest.xml" />
     <None Remove="TestFiles\Favorites.xml" />
+    <None Remove="TestFiles\Genres.xml" />
     <None Remove="TestFiles\Romania.xml" />
     <None Remove="TestFiles\Root.xml" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="TestFiles\Bucharest.xml" />
+    <EmbeddedResource Include="TestFiles\Genres.xml" />
     <EmbeddedResource Include="TestFiles\Romania.xml" />
     <EmbeddedResource Include="TestFiles\Favorites.xml" />
     <EmbeddedResource Include="TestFiles\Root.xml" />

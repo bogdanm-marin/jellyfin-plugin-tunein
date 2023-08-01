@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Xml.Linq;
+using Jellyfin.Plugin.TuneIn.Providers.Genres;
 using MediaBrowser.Controller;
 using MediaBrowser.Controller.Channels;
 using MediaBrowser.Model.Channels;
@@ -20,6 +21,7 @@ namespace Jellyfin.Plugin.TuneIn.Providers
     public class ChannelItemInfoProvider
     {
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly GenresProvider _genresProvider;
         private readonly ILogger<ChannelItemInfoProvider> _logger;
         private readonly string _localUrl;
 
@@ -28,13 +30,16 @@ namespace Jellyfin.Plugin.TuneIn.Providers
         /// </summary>
         /// <param name="httpClientFactory">IHttpClientFactory.</param>
         /// <param name="serverApplicationHost"><see cref="IServerApplicationHost"/> instance.</param>
+        /// <param name="genresProvider">Genres Provider.</param>
         /// <param name="logger">ILogger.</param>
         public ChannelItemInfoProvider(
             IHttpClientFactory httpClientFactory,
             [NotNull] IServerApplicationHost serverApplicationHost,
+            GenresProvider genresProvider,
             ILogger<ChannelItemInfoProvider> logger)
         {
             _httpClientFactory = httpClientFactory;
+            _genresProvider = genresProvider;
             _logger = logger;
 
             _localUrl = serverApplicationHost.GetApiUrlForLocalAccess();
@@ -58,6 +63,10 @@ namespace Jellyfin.Plugin.TuneIn.Providers
             using var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
             var xmlDocument = await XElement.LoadAsync(stream, LoadOptions.None, cancellationToken).ConfigureAwait(false);
 
+            var genres = await _genresProvider
+                            .GetGenres(cancellationToken)
+                            .ConfigureAwait(false);
+
             var types = new HashSet<string> { "link", "audio" };
             var items = from outline in xmlDocument.Descendants("outline")
                         let type = outline.Attribute("type")
@@ -75,11 +84,13 @@ namespace Jellyfin.Plugin.TuneIn.Providers
                         let item = outline.Attribute("item")
                         let stream_type = outline.Attribute("stream_type")
                         let playing_image = outline.Attribute("playing_image")
+                        let genre_id = outline.Attribute("genre_id")
                         select new ChannelItemInfo
                         {
                             Id = url?.Value,
                             Name = text?.Value,
-
+                            SeriesName = text?.Value,
+                            Overview = subtext?.Value,
                             Type = type.Value switch
                             {
                                 "link" => ChannelItemType.Folder,
@@ -106,6 +117,7 @@ namespace Jellyfin.Plugin.TuneIn.Providers
                             OriginalTitle = current_track?.Value,
                             CommunityRating = (int?)reliability,
                             OfficialRating = reliability?.Value,
+                            Genres = GetGenres(genres, genre_id?.Value)
                         };
 
             return items;
@@ -140,6 +152,18 @@ namespace Jellyfin.Plugin.TuneIn.Providers
             var encodedName = HttpUtility.UrlEncode(name);
 
             return $"{_localUrl}/api/v1/TuneIn/Image/generate/{encodedName}-w{width}-h{height}-fs{fontSize}.{format}";
+        }
+
+        private List<string> GetGenres(IDictionary<string, Genre> genres, string? genre_id)
+        {
+            if (genre_id is not null &&
+                genres.TryGetValue(genre_id, out var genre)
+                && genre?.Name is not null)
+            {
+                return new List<string> { genre.Name };
+            }
+
+            return new List<string>();
         }
     }
 }

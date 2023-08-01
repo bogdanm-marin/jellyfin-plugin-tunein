@@ -238,7 +238,7 @@ namespace Jellyfin.Plugin.TuneIn.Channels
         {
             using (_logger.BeginScope("{Method} {UserId}", nameof(GetLatestMedia), request?.UserId))
             {
-                var uri = _tuneInUriProvider.FavoritesUri ?? _tuneInUriProvider.PopularUri;
+                var uri = _tuneInUriProvider.LocalUri ?? _tuneInUriProvider.FavoritesUri ?? _tuneInUriProvider.PopularUri;
 
                 _logger.LogDebug("ChannelLatestMediaSearch {Uri}", uri);
 

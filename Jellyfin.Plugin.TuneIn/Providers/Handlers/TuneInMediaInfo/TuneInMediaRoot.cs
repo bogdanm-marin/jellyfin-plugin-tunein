@@ -7,7 +7,8 @@ namespace Jellyfin.Plugin.TuneIn.Providers.Handlers.TuneInMediaInfo
     /// <summary>
     /// TuneInMedia root.
     /// </summary>
-    public class TuneInMediaRoot
+    /// <typeparam name="TBody">Body Type.</typeparam>
+    public class TuneInMediaRoot<TBody>
     {
         /// <summary>
         /// Gets or Sets Head section.
@@ -17,6 +18,6 @@ namespace Jellyfin.Plugin.TuneIn.Providers.Handlers.TuneInMediaInfo
         /// <summary>
         /// Gets or Sets Body section.
         /// </summary>
-        public IReadOnlyList<Body>? Body { get; set; }
+        public IReadOnlyList<TBody>? Body { get; set; }
     }
 }

@@ -83,5 +83,11 @@ namespace Jellyfin.Plugin.TuneIn.Tests.Extensions
 
             mockedRequest.Respond(() => Task.FromResult(response));
         }
+
+        public static void RespondOkWithEmbededResource<TAssembly>(this MockedRequest mockedRequest, string embededReource)
+        {
+            mockedRequest
+                .RespondOk(typeof(TAssembly).Assembly.GetManifestResourceStream($"{typeof(TAssembly).Namespace}.{embededReource}")!);
+        }
     }
 }

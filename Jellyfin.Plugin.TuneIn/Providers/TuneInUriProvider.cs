@@ -11,6 +11,7 @@ namespace Jellyfin.Plugin.TuneIn.Providers
     {
         private readonly Uri _browseUri;
         private readonly Uri _searchUri;
+        private readonly Uri _describeUri;
         private readonly Plugin _plugin;
 
         /// <summary>
@@ -24,6 +25,7 @@ namespace Jellyfin.Plugin.TuneIn.Providers
             var rootUri = new Uri(RootUri);
             _browseUri = new Uri(rootUri, "Browse.ashx");
             _searchUri = new Uri(rootUri, "Search.ashx");
+            _describeUri = new Uri(rootUri, "Describe.ashx");
         }
 
         /// <summary>
@@ -99,6 +101,23 @@ namespace Jellyfin.Plugin.TuneIn.Providers
                 var queryParams = GetQueryParams(uriBuilder.Query);
                 queryParams.Add("c", "popular");
 
+                uriBuilder.Query = queryParams.ToString();
+
+                return uriBuilder.Uri;
+            }
+        }
+
+        /// <summary>
+        /// Gets Genres Uri for TuneIn.
+        /// </summary>
+        public Uri GenresUri
+        {
+            get
+            {
+                var uriBuilder = new UriBuilder(_describeUri);
+
+                var queryParams = HttpUtility.ParseQueryString(uriBuilder.Query);
+                queryParams.Add("c", "genres");
                 uriBuilder.Query = queryParams.ToString();
 
                 return uriBuilder.Uri;

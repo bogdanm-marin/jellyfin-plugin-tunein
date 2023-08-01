@@ -85,7 +85,7 @@ namespace Jellyfin.Plugin.TuneIn.Providers.MediaSourceInformation
                     }
 
                     var mediaRoot = await response.Content
-                        .ReadFromJsonAsync<TuneInMediaRoot>(cancellationToken: cancellationToken)
+                        .ReadFromJsonAsync<TuneInMediaRoot<MediaSourceInfoElement>>(cancellationToken: cancellationToken)
                         .ConfigureAwait(false);
 
                     if (mediaRoot is null || mediaRoot.Body is null)
