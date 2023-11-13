@@ -1,4 +1,5 @@
 using Jellyfin.Plugin.TuneIn.Channels;
+using Jellyfin.Plugin.TuneIn.Filters;
 using Jellyfin.Plugin.TuneIn.Providers;
 using Jellyfin.Plugin.TuneIn.Providers.Handlers.MediaTypeHandlers;
 using Jellyfin.Plugin.TuneIn.Providers.Handlers.UriHandlers;
@@ -27,6 +28,10 @@ namespace Jellyfin.Plugin.TuneIn
                 .AddScoped<MediaSourceInfoProvider>()
                 .AddScoped<IMediaSourceInfoProvider, TuneInMediaSourceInfoProvider>()
 
+                ;
+
+            serviceCollection
+                .AddScoped<IMediaSourceInfoFilter, TuneInAdsMediaSourceInfoFilter>()
                 ;
 
             serviceCollection

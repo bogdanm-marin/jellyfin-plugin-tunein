@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Jellyfin.Plugin.TuneIn.Filters;
 using MediaBrowser.Model.Dto;
 using Microsoft.Extensions.Logging;
 
@@ -15,19 +16,23 @@ namespace Jellyfin.Plugin.TuneIn.Providers.MediaSourceInformation
     public class MediaSourceInfoProviderManager
     {
         private readonly ILogger<MediaSourceInfoProvider> _logger;
+        private readonly IEnumerable<IMediaSourceInfoFilter> _filters;
         private readonly IList<IMediaSourceInfoProvider> _handlers;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MediaSourceInfoProviderManager"/> class.
         /// </summary>
         /// <param name="logger">Logger.</param>
-        /// <param name="handlers"><see cref="MediaSourceInfoProvider" /> handlers.</param>
+        /// <param name="handlers"><see cref="IMediaSourceInfoProvider" /> handlers.</param>
+        /// <param name="filters"><see cref="IMediaSourceInfoFilter" /> filters.</param>
         public MediaSourceInfoProviderManager(
             ILogger<MediaSourceInfoProvider> logger,
-            IEnumerable<IMediaSourceInfoProvider> handlers)
+            IEnumerable<IMediaSourceInfoProvider> handlers,
+            IEnumerable<IMediaSourceInfoFilter> filters)
         {
             _logger = logger;
             _handlers = handlers.OrderBy(_ => _.Order).ToList();
+            _filters = filters.ToList();
         }
 
         /// <summary>
@@ -49,8 +54,11 @@ namespace Jellyfin.Plugin.TuneIn.Providers.MediaSourceInformation
 
                     await foreach (var item in source)
                     {
-                        hasItems = true;
-                        yield return item;
+                        if (_filters.All(f => f.IsAllowed(item)))
+                        {
+                            hasItems = true;
+                            yield return item;
+                        }
                     }
 
                     if (hasItems)

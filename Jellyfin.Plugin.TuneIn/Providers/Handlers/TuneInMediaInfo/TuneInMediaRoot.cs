@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace Jellyfin.Plugin.TuneIn.Providers.Handlers.TuneInMediaInfo
 {
