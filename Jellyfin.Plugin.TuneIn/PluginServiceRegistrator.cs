@@ -1,4 +1,7 @@
+using System;
 using Jellyfin.Plugin.TuneIn.Channels;
+using Jellyfin.Plugin.TuneIn.Configuration;
+using Jellyfin.Plugin.TuneIn.Filters;
 using Jellyfin.Plugin.TuneIn.Providers;
 using Jellyfin.Plugin.TuneIn.Providers.Genres;
 using Jellyfin.Plugin.TuneIn.Providers.Handlers.MediaTypeHandlers;
@@ -6,6 +9,8 @@ using Jellyfin.Plugin.TuneIn.Providers.Handlers.UriHandlers;
 using Jellyfin.Plugin.TuneIn.Providers.MediaSourceInformation;
 using MediaBrowser.Common.Plugins;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 
 namespace Jellyfin.Plugin.TuneIn
 {
@@ -22,8 +27,9 @@ namespace Jellyfin.Plugin.TuneIn
                 .AddSingleton<CacheProvider>()
                 ;
 
-            serviceCollection.AddScoped<TuneInChannel>();
-            serviceCollection.AddScoped<Plugin>();
+            serviceCollection
+                .AddScoped<TuneInChannel>()
+                .AddScoped<Plugin>();
 
             serviceCollection
                 .AddScoped<ChannelItemInfoProvider>()
@@ -33,7 +39,15 @@ namespace Jellyfin.Plugin.TuneIn
                 .AddScoped<MediaSourceInfoProvider>()
                 .AddScoped<IMediaSourceInfoProvider, TuneInMediaSourceInfoProvider>()
                 .AddScoped<GenresProvider>()
+                ;
 
+            serviceCollection
+                .AddOptions<MediaSourceInfoUrlFilterOptions>()
+                .Configure<Plugin>((o, p) => o.AddFilters(p.Configuration?.FilterUrls))
+                ;
+
+            serviceCollection
+                .AddScoped<IMediaSourceInfoFilter, MediaSourceInfoUrlFilter>()
                 ;
 
             serviceCollection

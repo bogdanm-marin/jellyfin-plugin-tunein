@@ -160,7 +160,7 @@ namespace Jellyfin.Plugin.TuneIn.Channels
 
                     var items = source.ToList();
 
-                    _logger.LogDebug("{Method} results {Count}", nameof(GetChannelItems), items?.Count);
+                    _logger.LogDebug("{Method} results {Count}", nameof(GetChannelItems), items?.Count ?? 0);
 
                     var result = new ChannelItemResult();
 

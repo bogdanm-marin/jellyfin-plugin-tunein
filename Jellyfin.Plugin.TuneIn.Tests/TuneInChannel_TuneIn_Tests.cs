@@ -1,13 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Jellyfin.Plugin.TuneIn.Channels;
+using Jellyfin.Plugin.TuneIn.Filters;
 using Jellyfin.Plugin.TuneIn.Tests.Extensions;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Controller;
@@ -34,6 +30,7 @@ namespace Jellyfin.Plugin.TuneIn.Tests
 
             var services = new ServiceCollection();
             serviceRegistrator.RegisterServices(services);
+            services.Configure<MediaSourceInfoUrlFilterOptions>(o => o.AddFilters("ads.cust_params;ads_partner_alias;ads.stationId"));
 
             services
                 .AddLogging(b => b.AddXUnit(output))
@@ -227,6 +224,98 @@ https://live4ro.antenaplay.ro/radiozu/radiozu-48000.m3u8
 ".Trim(),
                     contentType: "text/html; charset=UTF-8"
                 );
+            var cancellationToken = CancellationToken.None;
+
+            var target = scope.ServiceProvider.GetRequiredService<TuneInChannel>();
+
+            // Act
+            var result = await target.GetChannelItemMediaInfo(url, cancellationToken)
+                                    .ConfigureAwait(false);
+
+            // Assert
+
+            result.Should().BeEquivalentTo(new[]
+            {
+                 new MediaSourceInfo
+            {
+                Id = "http://opml.radiotime.com/Tune.ashx?id=s97051&formats=mp3,aac,ogg,hls&partnerId=TestPartnerId&username=TestUsername",
+                Name = "http://opml.radiotime.com/Tune.ashx?id=s97051&formats=mp3,aac,ogg,hls&partnerId=TestPartnerId&username=TestUsername",
+                Path = "http://edge126.rdsnet.ro:84/profm/profm.mp3",
+                Protocol = MediaProtocol.Http,
+                Container = "aac",
+                IsRemote = true,
+                IsInfiniteStream = true,
+                SupportsDirectPlay = true,
+                SupportsDirectStream = true,
+//                TranscodingSubProtocol = "hls",
+//                RunTimeTicks = 0,
+                MediaStreams = new []
+                {
+                            new MediaStream
+                            {
+                                Index = -1,
+                                Type = MediaStreamType.Audio,
+                                Codec = "aac",
+                                BitRate = 128
+                            }
+                },
+            }
+        });
+        }
+
+        [Fact]
+        public async Task TuneIn_Should_Filter_ad_urls()
+        {
+            using var scope = _serviceProvider.CreateScope();
+
+            var httpHandler = scope.ServiceProvider.GetRequiredService<MockHttpMessageHandler>();
+            var url = "http://opml.radiotime.com/Tune.ashx?id=s97051&formats=mp3,aac,ogg,hls&partnerId=TestPartnerId&username=TestUsername";
+https://tunein-od.streamguys1.com/bump_sonic_pre.mp3?ads.cust_params=partnerId%253duD1X52pA%2526ads_partner_alias%253dce.MediaBrowserTV%2526premium%253dfalse%2526abtest%253d%2526language%253den%2526stationId%253ds97051%2526is_ondemand%253dfalse%2526genre_id%253dg22%2526class%253dmusic%2526is_family%253dfalse%2526is_mature%253dfalse%2526country_region_id%253d185%2526station_language%253dro%2526AffiliateIds%253d39908%2526enableDoublePreroll%253dtrue&ads.stationId=s97051&ads.ads_partner_alias=ce.MediaBrowserTV&ads.url=https%3a%2f%2ftunein.com%2fdesc%2fs97051%2f&ads.description_url=https%3a%2f%2ftunein.com%2fdesc%2fs97051%2f&ads.npa=1&ads.gdfp_req=1&ads.is_lat=1
+            httpHandler
+                .WhenGet($"{url}&render=json")
+                .RespondOk(
+                content: @"
+ { ""head"": {	""status"": ""200""}, ""body"": [
+{ ""element"" : ""audio"", 
+""url"": ""https://tunein-od.streamguys1.com/bump_sonic_pre.mp3?ads.cust_params=partnerId%253duD1X52pA%2526ads_partner_alias%253dce.MediaBrowserTV%2526premium%253dfalse%2526abtest%253d%2526language%253den%2526stationId%253ds97051%2526is_ondemand%253dfalse%2526genre_id%253dg22%2526class%253dmusic%2526is_family%253dfalse%2526is_mature%253dfalse%2526country_region_id%253d185%2526station_language%253dro%2526AffiliateIds%253d39908%2526enableDoublePreroll%253dtrue&ads.stationId=s97051&ads.ads_partner_alias=ce.MediaBrowserTV&ads.url=https%3a%2f%2ftunein.com%2fdesc%2fs97051%2f&ads.description_url=https%3a%2f%2ftunein.com%2fdesc%2fs97051%2f&ads.npa=1&ads.gdfp_req=1&ads.is_lat=1"",
+""reliability"": 100,
+""bitrate"": 96,
+""media_type"": ""mp3"",
+""position"": 0,
+""player_width"": 640,
+""player_height"": 480,
+""is_hls_advanced"": ""false"",
+""live_seek_stream"": ""false"",
+""use_native_player"": false,
+""is_direct"": true },
+ { ""element"" : ""audio"", 
+""url"": ""https://prod-pre.fns.tunein.com/v1/master/30ead7055f8b8e1f2f04add745f139b184df6925/prod_preroll/preroll0.m3u8?ads.cust_params=partnerId%253duD1X52pA%2526ads_partner_alias%253dce.MediaBrowserTV%2526premium%253dfalse%2526abtest%253d%2526language%253den%2526stationId%253ds80560%2526is_ondemand%253dfalse%2526genre_id%253dg76%2526class%253dmusic%2526is_family%253dtrue%2526is_mature%253dfalse%2526country_region_id%253d185%2526station_language%253dro%2526enableDoublePreroll%253dtrue&ads.stationId=s80560&ads.ads_partner_alias=ce.MediaBrowserTV&ads.url=https%3a%2f%2ftunein.com%2fdesc%2fs80560%2f&ads.description_url=https%3a%2f%2ftunein.com%2fdesc%2fs80560%2f&ads.npa=1&ads.gdfp_req=1&ads.is_lat=1"",
+""reliability"": 100,
+""bitrate"": 96,
+""media_type"": ""mp3"",
+""position"": 0,
+""player_width"": 640,
+""player_height"": 480,
+""is_hls_advanced"": ""false"",
+""live_seek_stream"": ""false"",
+""use_native_player"": false,
+""is_direct"": true },
+ { ""element"" : ""audio"", 
+""url"": ""http://edge126.rdsnet.ro:84/profm/profm.mp3"",
+""reliability"": 98,
+""bitrate"": 128,
+""media_type"": ""aac"",
+""position"": 0,
+""player_width"": 640,
+""player_height"": 480,
+""is_hls_advanced"": ""false"",
+""live_seek_stream"": ""false"",
+""guide_id"": ""e78772074"",
+""is_ad_clipped_content_enabled"": ""false"",
+""is_direct"": true }] }
+",
+                contentType: "application/json");
+
             var cancellationToken = CancellationToken.None;
 
             var target = scope.ServiceProvider.GetRequiredService<TuneInChannel>();

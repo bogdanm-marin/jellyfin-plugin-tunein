@@ -22,10 +22,15 @@ namespace Jellyfin.Plugin.TuneIn.Configuration
         /// </summary>
         public string? LatitudeLongitude { get; set; }
 
+        /// <summary>
+        /// Gets or Sets Ads filters.
+        /// </summary>
+        public string? FilterUrls { get; set; } = "ads.cust_params;ads_partner_alias;ads.stationId";
+
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"{PartnerId}-{Username}-{LatitudeLongitude}";
+            return $"{PartnerId}-{Username}-{LatitudeLongitude}-{FilterUrls}";
         }
     }
 }

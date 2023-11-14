@@ -28,6 +28,10 @@
                         </div>
                     </div>
 
+                    <div class="inputContainer">
+                        <input type="text" is="emby-input" id="txtFilterUrls" label="Filter urls:" />
+                    </div>
+
                     <br />
                     <div>
                         <button is="emby-button" type="submit" class="raised button-submit block"><span>Save</span></button>
@@ -53,6 +57,7 @@
                     $('#txtUsername', page).val(config.Username || "");
                     $('#txtPartnerId', page).val(config.PartnerId || "");
                     $('#txtLatitudeLongitude', page).val(config.LatitudeLongitude || "");
+                    $('#txtFilterUrls', page).val(config.FilterUrls || "");
 
                     Dashboard.hideLoadingMsg();
                 });
@@ -69,10 +74,12 @@
                     var Username = $('#txtUsername', form).val();
                     var PartnerId = $('#txtPartnerId', form).val();
                     var LatitudeLongitude = $('#txtLatitudeLongitude', form).val();
+                    var FilterUrls = $('#txtFilterUrls', form).val();
 
                     config.Username = Username ? Username : null;
                     config.PartnerId = PartnerId ? PartnerId : null;
                     config.LatitudeLongitude = LatitudeLongitude ? LatitudeLongitude : null;
+                    config.FilterUrls = FilterUrls ? FilterUrls : null;
 
                     ApiClient.updatePluginConfiguration(TuneInConfigurationPage.pluginUniqueId, config).then(Dashboard.processPluginConfigurationUpdateResult);
                 });
