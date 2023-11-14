@@ -40,7 +40,7 @@ steps:
   commands:
   - apk add zip
   - mkdir -p publish
-  - zip -j publish/tunein_$$(git describe --tags --abbrev=0).zip ./Jellyfin.Plugin.TuneIn/bin/Release/net*/publish/*.dll
+  - zip -j publish/tunein_$$(git describe --tags --abbrev=0).zip ./Jellyfin.Plugin.TuneIn/bin/Release/net*/publish/*
   - echo 'checksum'
   - md5sum publish/tunein_*.zip | awk '{print toupper($1), substr($2,9)}'
   when:
