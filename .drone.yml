@@ -27,14 +27,22 @@ steps:
   commands:
   - dotnet test --configuration Release
 
+- name: publish
+  image: mcr.microsoft.com/dotnet/sdk:6.0
+  commands:
+  - dotnet publish /p:PublishProfile=FolderProfile
+  when:
+    target:
+    - production
+  
 - name: bundle
   image: alpine/git
   commands:
   - apk add zip
   - mkdir -p publish
-  - zip -j publish/tunein_$$(git describe --tags --abbrev=0).zip ./Jellyfin.Plugin.TuneIn/bin/Release/net*/*.dll
+  - zip -j publish/tunein_$$(git describe --tags --abbrev=0).zip ./Jellyfin.Plugin.TuneIn/bin/Release/net*/publish/*.dll
   - echo 'checksum'
-  - md5sum publish/tunein_*.zip | awk '{print $1, substr($2,9)}'
+  - md5sum publish/tunein_*.zip | awk '{print toupper($1), substr($2,9)}'
   when:
     target:
     - production
