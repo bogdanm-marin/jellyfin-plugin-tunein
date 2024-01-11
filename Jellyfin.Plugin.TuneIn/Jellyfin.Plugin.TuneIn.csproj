@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>Jellyfin.Plugin.TuneIn</RootNamespace>
-    <AssemblyVersion>1.0.8.14</AssemblyVersion>
-    <FileVersion>1.0.8.14</FileVersion>
+    <AssemblyVersion>1.0.8.15</AssemblyVersion>
+    <FileVersion>1.0.8.15</FileVersion>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Nullable>enable</Nullable>
@@ -49,8 +49,8 @@
 
   <ItemGroup>
 
-    <PackageReference Include="Jellyfin.Controller" Version="10.8.12" PrivateAssets="All" />
-    <PackageReference Include="Jellyfin.Model" Version="10.8.12" PrivateAssets="All" />
+    <PackageReference Include="Jellyfin.Controller" Version="10.8.13" PrivateAssets="All" />
+    <PackageReference Include="Jellyfin.Model" Version="10.8.13" PrivateAssets="All" />
     <PackageReference Include="SerilogAnalyzer" Version="0.15.0" PrivateAssets="All" />
     <PackageReference Include="SkiaSharp" Version="2.88.6" PrivateAssets="All" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.435" PrivateAssets="All" />
